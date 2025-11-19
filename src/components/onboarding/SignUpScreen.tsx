@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { trackSignup } from '@/hooks/useCreatorTracking';
 
 interface SignUpScreenProps {
   onComplete: () => void;
@@ -57,6 +58,56 @@ export const SignUpScreen = ({ onComplete, partnerData }: SignUpScreenProps) => 
       if (error) throw error;
 
       if (data.user) {
+        // Track signup for creator/referral
+        await trackSignup(data.user.id);
+
+        // Check for referral code
+        const referralCode = localStorage.getItem('referral_code');
+        if (referralCode) {
+          try {
+            // Record the referral
+            const { data: referrerData } = await supabase
+              .from('referral_codes')
+              .select('user_id')
+              .eq('code', referralCode)
+              .single();
+
+            if (referrerData) {
+              await supabase.from('referrals').insert([{
+                referrer_id: referrerData.user_id,
+                referred_id: data.user.id,
+                referral_code: referralCode,
+              }]);
+
+              // Update referral code uses
+              const { data: codeData } = await supabase
+                .from('referral_codes')
+                .select('uses')
+                .eq('code', referralCode)
+                .single();
+
+              await supabase
+                .from('referral_codes')
+                .update({ uses: (codeData?.uses || 0) + 1 })
+                .eq('code', referralCode);
+
+              // Give referrer bonus credits
+              const { data: creditData } = await supabase
+                .from('message_credits')
+                .select('free_messages_remaining')
+                .eq('user_id', referrerData.user_id)
+                .single();
+
+              await supabase
+                .from('message_credits')
+                .update({ free_messages_remaining: (creditData?.free_messages_remaining || 0) + 2 })
+                .eq('user_id', referrerData.user_id);
+            }
+          } catch (refError) {
+            console.error('Referral error:', refError);
+          }
+        }
+
         // Update profile with country
         await supabase
           .from('profiles')

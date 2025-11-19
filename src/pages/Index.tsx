@@ -1,10 +1,14 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCreatorTracking } from '@/hooks/useCreatorTracking';
 
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  
+  // Track creator referrals
+  useCreatorTracking();
 
   useEffect(() => {
     if (!loading) {
