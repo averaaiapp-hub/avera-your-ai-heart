@@ -88,6 +88,77 @@ export type Database = {
           },
         ]
       }
+      creator_stats: {
+        Row: {
+          creator_code: string
+          id: string
+          total_conversions: number | null
+          total_revenue: number | null
+          total_signups: number | null
+          total_visits: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          creator_code: string
+          id?: string
+          total_conversions?: number | null
+          total_revenue?: number | null
+          total_signups?: number | null
+          total_visits?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          creator_code?: string
+          id?: string
+          total_conversions?: number | null
+          total_revenue?: number | null
+          total_signups?: number | null
+          total_visits?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      creator_tracking: {
+        Row: {
+          conversion_date: string | null
+          converted: boolean | null
+          country: string | null
+          created_at: string | null
+          creator_code: string
+          device: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          conversion_date?: string | null
+          converted?: boolean | null
+          country?: string | null
+          created_at?: string | null
+          creator_code: string
+          device?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          conversion_date?: string | null
+          converted?: boolean | null
+          country?: string | null
+          created_at?: string | null
+          creator_code?: string
+          device?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_tracking_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_credits: {
         Row: {
           created_at: string | null
@@ -182,6 +253,80 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          id: string
+          user_id: string
+          uses: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+          uses?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+          uses?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string | null
+          id: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          reward_given: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          reward_given?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          referral_code?: string
+          referred_id?: string
+          referrer_id?: string
+          reward_given?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_tiers: {
         Row: {
           created_at: string | null
@@ -265,6 +410,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_referral_code: { Args: never; Returns: string }
       has_active_subscription: { Args: { user_uuid: string }; Returns: boolean }
     }
     Enums: {
