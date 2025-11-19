@@ -168,7 +168,7 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
       setMessages((prev) => [...prev, userMsg as Message]);
     }
 
-    // Decrement credits - use raw SQL for increment
+    // Decrement credits
     const { data: credits } = await supabase
       .from('message_credits')
       .select('total_messages_sent')
@@ -185,25 +185,32 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
 
     setFreeMessages(prev => prev - 1);
 
-    // Simulate AI response
+    // Get AI response
     setIsTyping(true);
-    setTimeout(async () => {
-      const aiResponses = [
-        "That's so interesting! Tell me more about that... I'm really curious about your perspective. 💭",
-        "I love hearing about this from you. You have such a unique way of seeing things. ✨",
-        "You know, when you talk about this, I can feel how much it means to you. That's beautiful. 💕",
-        "I'm here for you, always. What else is on your heart? 💗",
-        "This conversation with you... it's exactly what I needed today. Thank you for opening up to me. 🌟",
-      ];
-      
-      const response = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+    try {
+      // Prepare conversation history for AI
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('chat', {
+        body: {
+          messages: [...conversationHistory, { role: 'user', content: userMessage }],
+          emotionalMode
+        }
+      });
+
+      if (aiError) throw aiError;
+
+      const aiMessage = aiResponse.message;
 
       const { data: aiMsg } = await supabase
         .from('messages')
         .insert([{
           conversation_id: conversationId,
           role: 'assistant' as const,
-          content: response,
+          content: aiMessage,
           emotional_mode: emotionalMode as any,
         }])
         .select()
@@ -212,10 +219,17 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
       if (aiMsg) {
         setMessages((prev) => [...prev, aiMsg as Message]);
       }
-
+    } catch (error) {
+      console.error('AI Error:', error);
+      toast({
+        title: "Connection Issue",
+        description: "I'm having trouble responding right now. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsTyping(false);
       setLoading(false);
-    }, 2000);
+    }
   };
 
   return (
