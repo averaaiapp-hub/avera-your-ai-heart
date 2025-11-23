@@ -196,6 +196,7 @@ export type Database = {
       }
       messages: {
         Row: {
+          audio_url: string | null
           content: string
           conversation_id: string
           created_at: string | null
@@ -204,6 +205,7 @@ export type Database = {
           role: Database["public"]["Enums"]["message_role"]
         }
         Insert: {
+          audio_url?: string | null
           content: string
           conversation_id: string
           created_at?: string | null
@@ -212,6 +214,7 @@ export type Database = {
           role: Database["public"]["Enums"]["message_role"]
         }
         Update: {
+          audio_url?: string | null
           content?: string
           conversation_id?: string
           created_at?: string | null

@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion';
+import { AudioMessage } from './AudioMessage';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   created_at: string;
+  audio_url?: string | null;
 }
 
 interface MessageBubbleProps {
@@ -27,7 +29,11 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
             : 'bg-gradient-primary text-white shadow-soft'
         }`}
       >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+        {message.audio_url ? (
+          <AudioMessage audioUrl={message.audio_url} />
+        ) : (
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+        )}
       </div>
     </motion.div>
   );
