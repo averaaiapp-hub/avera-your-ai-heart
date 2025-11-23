@@ -28,7 +28,7 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { messages, emotionalMode = 'romantic' } = await req.json();
+    const { messages, emotionalMode = 'romantic', requestVoice = false } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     if (!LOVABLE_API_KEY) {
@@ -114,8 +114,38 @@ Important guidelines:
     const data = await response.json();
     const aiMessage = data.choices[0].message.content;
 
+    // Generate voice response if requested
+    let audioContent = null;
+    if (requestVoice && aiMessage && partner) {
+      try {
+        const ttsResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/text-to-speech`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': req.headers.get('Authorization') || '',
+          },
+          body: JSON.stringify({
+            text: aiMessage,
+            voice: partner.gender === 'female' ? 'nova' : 'onyx'
+          }),
+        });
+
+        if (ttsResponse.ok) {
+          const ttsData = await ttsResponse.json();
+          audioContent = ttsData.audioContent;
+          console.log('Generated voice response');
+        }
+      } catch (error) {
+        console.error('Error generating voice:', error);
+        // Continue without voice if TTS fails
+      }
+    }
+
     return new Response(
-      JSON.stringify({ message: aiMessage }),
+      JSON.stringify({ 
+        message: aiMessage,
+        audio: audioContent 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
