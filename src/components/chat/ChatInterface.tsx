@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { EmotionalModeSelector } from './EmotionalModeSelector';
@@ -27,6 +28,7 @@ interface ChatInterfaceProps {
 export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -453,7 +455,17 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
               </p>
             )}
           </div>
-          <EmotionalModeSelector value={emotionalMode} onChange={setEmotionalMode} />
+          <div className="flex items-center gap-2">
+            <EmotionalModeSelector value={emotionalMode} onChange={setEmotionalMode} />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/settings')}
+              className="rounded-full"
+            >
+              <Settings className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
