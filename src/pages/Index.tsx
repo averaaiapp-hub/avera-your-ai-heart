@@ -1,24 +1,17 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 import { useCreatorTracking } from '@/hooks/useCreatorTracking';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
   
   // Track creator referrals
   useCreatorTracking();
 
   useEffect(() => {
-    if (!loading) {
-      if (user) {
-        navigate('/chat');
-      } else {
-        navigate('/onboarding');
-      }
-    }
-  }, [user, loading, navigate]);
+    // Always redirect to onboarding flow
+    navigate('/onboarding');
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
