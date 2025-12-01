@@ -159,6 +159,65 @@ export type Database = {
           },
         ]
       }
+      gift_types: {
+        Row: {
+          cost_credits: number
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          name: string
+        }
+        Insert: {
+          cost_credits?: number
+          created_at?: string
+          description?: string | null
+          icon: string
+          id?: string
+          name: string
+        }
+        Update: {
+          cost_credits?: number
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      gifts_sent: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          gift_type_id: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          gift_type_id: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          gift_type_id?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gifts_sent_gift_type_id_fkey"
+            columns: ["gift_type_id"]
+            isOneToOne: false
+            referencedRelation: "gift_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_credits: {
         Row: {
           created_at: string | null

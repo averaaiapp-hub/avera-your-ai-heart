@@ -9,6 +9,7 @@ import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { EmotionalModeSelector } from './EmotionalModeSelector';
 import { VoiceRecordButton } from './VoiceRecordButton';
+import { GiftSelector } from './GiftSelector';
 
 interface Message {
   id: string;
@@ -16,6 +17,7 @@ interface Message {
   content: string;
   created_at: string;
   audio_url?: string | null;
+  gift_id?: string | null;
 }
 
 interface ChatInterfaceProps {
@@ -339,6 +341,10 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
         <div className="flex gap-2">
           <VoiceRecordButton 
             onRecordingComplete={handleVoiceRecording}
+            disabled={loading || isProcessingVoice}
+          />
+          <GiftSelector 
+            onSendGift={sendGift}
             disabled={loading || isProcessingVoice}
           />
           <Input
