@@ -61,21 +61,8 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
       .single();
 
     if (data) {
-      setFreeMessages(data.free_messages_remaining);
-      if (data.free_messages_remaining <= 0) {
-        // Check subscription
-        const { data: subscription } = await supabase
-          .from('user_subscriptions')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('status', 'active')
-          .gte('expires_at', new Date().toISOString())
-          .single();
-
-        if (!subscription) {
-          onCreditsExhausted();
-        }
-      }
+      // DEV MODE: Always show unlimited credits
+      setFreeMessages(999999);
     }
   };
 
@@ -165,12 +152,12 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
     const textToSend = messageText || input.trim();
     if (!textToSend || !conversationId || !user) return;
 
-    // Check credits first
-    await checkCredits();
-    if (freeMessages <= 0) {
-      onCreditsExhausted();
-      return;
-    }
+    // DEV MODE: Skip credit checks
+    // await checkCredits();
+    // if (freeMessages <= 0) {
+    //   onCreditsExhausted();
+    //   return;
+    // }
 
     if (!messageText) setInput('');
     setLoading(true);
@@ -333,11 +320,11 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
     try {
       setLoading(true);
 
-      // Check credits
-      if (freeMessages <= 0) {
-        onCreditsExhausted();
-        return;
-      }
+      // DEV MODE: Skip credit checks
+      // if (freeMessages <= 0) {
+      //   onCreditsExhausted();
+      //   return;
+      // }
 
       // Get gift details
       const { data: gift } = await supabase
@@ -470,11 +457,9 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold">Your AI Partner</h2>
-                {freeMessages > 0 && freeMessages <= 3 && (
-                  <p className="text-sm text-muted-foreground">
-                    {freeMessages} free {freeMessages === 1 ? 'message' : 'messages'} remaining
-                  </p>
-                )}
+                <p className="text-sm text-muted-foreground">
+                  Development Mode - Unlimited Messages
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <EmotionalModeSelector value={emotionalMode} onChange={setEmotionalMode} />
