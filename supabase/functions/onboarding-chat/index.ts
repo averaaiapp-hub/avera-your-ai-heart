@@ -13,11 +13,10 @@ serve(async (req) => {
 
   try {
     const { messages, currentStep, partnerData, stepNumber, totalSteps } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
-    }
+    
+    // Default to OpenAI for onboarding
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    const useOpenAI = !!OPENAI_API_KEY;
 
     // Build context-aware system prompt based on onboarding step
     const stepPrompts = {
@@ -69,20 +68,45 @@ Partner selections so far: ${JSON.stringify(partnerData)}${memoryContext}`;
 
     console.log('Onboarding chat request:', { currentStep, partnerData, messagesCount: messages.length });
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages,
-        ],
-      }),
-    });
+    let response;
+    if (useOpenAI) {
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4.1-mini-2025-04-14',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages,
+          ],
+          temperature: 0.8,
+          max_completion_tokens: 300,
+        }),
+      });
+    } else {
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (!LOVABLE_API_KEY) {
+        throw new Error('No AI API key configured');
+      }
+
+      response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages,
+          ],
+        }),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -122,20 +146,41 @@ Suggest exactly 5 beautiful, meaningful names that fit this personality. Return 
 Example: ["Aurora", "Luna", "Nova", "Aria", "Sage"]`;
 
       try {
-        const suggestionResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'google/gemini-2.5-flash',
-            messages: [
-              { role: 'system', content: 'You are a creative name generator. Return only valid JSON arrays.' },
-              { role: 'user', content: nameSuggestionsPrompt }
-            ],
-          }),
-        });
+        let suggestionResponse;
+        if (useOpenAI) {
+          suggestionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${OPENAI_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'gpt-4.1-mini-2025-04-14',
+              messages: [
+                { role: 'system', content: 'You are a creative name generator. Return only valid JSON arrays.' },
+                { role: 'user', content: nameSuggestionsPrompt }
+              ],
+              temperature: 0.7,
+              max_completion_tokens: 100,
+            }),
+          });
+        } else {
+          const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+          suggestionResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [
+                { role: 'system', content: 'You are a creative name generator. Return only valid JSON arrays.' },
+                { role: 'user', content: nameSuggestionsPrompt }
+              ],
+            }),
+          });
+        }
 
         if (suggestionResponse.ok) {
           const suggestionData = await suggestionResponse.json();
