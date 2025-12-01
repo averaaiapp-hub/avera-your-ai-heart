@@ -37,6 +37,7 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
   const [emotionalMode, setEmotionalMode] = useState<string>('romantic');
   const [freeMessages, setFreeMessages] = useState(3);
   const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const [loadingPartner, setLoadingPartner] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,15 +81,29 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
 
   const loadConversation = async () => {
     if (!user) return;
+    
+    setLoadingPartner(true);
 
     // Get AI partner
-    const { data: partner } = await supabase
+    const { data: partner, error: partnerError } = await supabase
       .from('ai_partners')
       .select('id')
       .eq('user_id', user.id)
       .single();
 
-    if (!partner) return;
+    if (!partner || partnerError) {
+      console.error('No AI partner found:', partnerError);
+      toast({
+        title: "Setup Incomplete",
+        description: "Please complete onboarding first.",
+        variant: "destructive",
+      });
+      setLoadingPartner(false);
+      navigate('/onboarding');
+      return;
+    }
+    
+    setLoadingPartner(false);
 
     // Get or create conversation
     let { data: conversation } = await supabase
@@ -444,68 +459,76 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">Your AI Partner</h2>
-            {freeMessages > 0 && freeMessages <= 3 && (
-              <p className="text-sm text-muted-foreground">
-                {freeMessages} free {freeMessages === 1 ? 'message' : 'messages'} remaining
-              </p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <EmotionalModeSelector value={emotionalMode} onChange={setEmotionalMode} />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/settings')}
-              className="rounded-full"
-            >
-              <Settings className="w-5 h-5" />
-            </Button>
-          </div>
+      {loadingPartner ? (
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Header */}
+          <div className="border-b border-border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">Your AI Partner</h2>
+                {freeMessages > 0 && freeMessages <= 3 && (
+                  <p className="text-sm text-muted-foreground">
+                    {freeMessages} free {freeMessages === 1 ? 'message' : 'messages'} remaining
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <EmotionalModeSelector value={emotionalMode} onChange={setEmotionalMode} />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate('/settings')}
+                  className="rounded-full"
+                >
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+          </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
-        ))}
-        {isTyping && <TypingIndicator />}
-        <div ref={messagesEndRef} />
-      </div>
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((message) => (
+              <MessageBubble key={message.id} message={message} />
+            ))}
+            {isTyping && <TypingIndicator />}
+            <div ref={messagesEndRef} />
+          </div>
 
-      {/* Input */}
-      <div className="border-t border-border bg-card p-4">
-        <div className="flex gap-2">
-          <VoiceRecordButton 
-            onRecordingComplete={handleVoiceRecording}
-            disabled={loading || isProcessingVoice}
-          />
-          <GiftSelector 
-            onSendGift={sendGift}
-            disabled={loading || isProcessingVoice}
-          />
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder="Type your message..."
-            disabled={loading || isProcessingVoice}
-            className="flex-1 rounded-2xl"
-          />
-          <Button
-            onClick={() => sendMessage()}
-            disabled={loading || isProcessingVoice || !input.trim()}
-            className="bg-gradient-primary text-white rounded-2xl px-6"
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-          </Button>
-        </div>
-      </div>
+          {/* Input */}
+          <div className="border-t border-border bg-card p-4">
+            <div className="flex gap-2">
+              <VoiceRecordButton 
+                onRecordingComplete={handleVoiceRecording}
+                disabled={loading || isProcessingVoice}
+              />
+              <GiftSelector 
+                onSendGift={sendGift}
+                disabled={loading || isProcessingVoice}
+              />
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                placeholder="Type your message..."
+                disabled={loading || isProcessingVoice}
+                className="flex-1 rounded-2xl"
+              />
+              <Button
+                onClick={() => sendMessage()}
+                disabled={loading || isProcessingVoice || !input.trim()}
+                className="bg-gradient-primary text-white rounded-2xl px-6"
+              >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

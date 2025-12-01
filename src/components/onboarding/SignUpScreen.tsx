@@ -115,18 +115,26 @@ export const SignUpScreen = ({ onComplete, partnerData }: SignUpScreenProps) => 
           .eq('id', data.user.id);
 
         // Create AI partner
-        await supabase.from('ai_partners').insert([{
+        const { error: partnerError } = await supabase.from('ai_partners').insert([{
           user_id: data.user.id,
           name: partnerData.name,
           gender: partnerData.gender as any,
           personality: partnerData.personality as any,
         }]);
 
+        if (partnerError) {
+          console.error('Partner creation error:', partnerError);
+          throw new Error('Failed to create AI partner. Please try again.');
+        }
+
         toast({
           title: "Welcome to Avera!",
           description: "Your account has been created.",
         });
 
+        // Small delay to ensure data is committed
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         onComplete();
       }
     } catch (error: any) {
