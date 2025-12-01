@@ -432,6 +432,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_preferences: {
+        Row: {
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          use_openai_elevenlabs: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          use_openai_elevenlabs?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          use_openai_elevenlabs?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_subscriptions: {
         Row: {
           created_at: string | null
