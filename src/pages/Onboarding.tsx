@@ -29,6 +29,7 @@ export default function Onboarding() {
       }}
     />,
     <PartnerNaming
+      partnerData={partnerData}
       onNext={(name) => {
         setPartnerData((prev) => ({ ...prev, name }));
         setStep(4);
@@ -53,6 +54,9 @@ export default function Onboarding() {
         <OnboardingChatAssistant 
           currentStep={currentStepName as any}
           partnerData={partnerData}
+          onNameSuggestion={(name) => {
+            setPartnerData((prev) => ({ ...prev, name }));
+          }}
         />
       )}
     </>

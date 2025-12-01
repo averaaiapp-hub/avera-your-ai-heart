@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, currentStep, partnerData } = await req.json();
+    const { messages, currentStep, partnerData, stepNumber, totalSteps } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     if (!LOVABLE_API_KEY) {
@@ -33,7 +33,9 @@ Guide them through gender and personality choices. Explain each personality type
       
       naming: `You are helping users choose a name for their AI partner. 
 Partner details: ${JSON.stringify(partnerData)}
-Suggest meaningful names that fit their chosen personality. Be creative and thoughtful.`,
+Based on the conversation and their partner's personality, suggest 3-5 beautiful, meaningful names. 
+Consider names that match the personality type (romantic, playful, caring, etc.). 
+Make your suggestions warm and explain why each name fits.`,
       
       preferences: `You are finalizing the companion setup. 
 Partner details: ${JSON.stringify(partnerData)}
@@ -47,6 +49,10 @@ Help them set emotional preferences and communication style. Make them excited f
       ? `\n\nConversation history:\n${messages.map((m: any) => `${m.role === 'user' ? 'User' : 'Guide'}: ${m.content}`).join('\n')}`
       : '';
 
+    const progressInfo = stepNumber && totalSteps 
+      ? `\n\nProgress: Step ${stepNumber} of ${totalSteps}` 
+      : '';
+
     const systemPrompt = `${contextPrompt}
 
 Important guidelines:
@@ -57,6 +63,7 @@ Important guidelines:
 - Never break character or mention technical details
 - If they seem unsure, offer gentle guidance
 - Celebrate their choices and build excitement
+- Reference their progress to keep them motivated${progressInfo}
 
 Partner selections so far: ${JSON.stringify(partnerData)}${memoryContext}`;
 
@@ -103,8 +110,54 @@ Partner selections so far: ${JSON.stringify(partnerData)}${memoryContext}`;
 
     console.log('Generated response:', aiMessage.substring(0, 100));
 
+    // Generate name suggestions for naming step
+    let nameSuggestions: string[] = [];
+    if (currentStep === 'naming' && partnerData.personality && partnerData.gender) {
+      const nameSuggestionsPrompt = `Based on this AI partner profile:
+- Gender: ${partnerData.gender}
+- Personality: ${partnerData.personality}
+- Conversation context: ${messages.slice(-3).map((m: any) => m.content).join(' ')}
+
+Suggest exactly 5 beautiful, meaningful names that fit this personality. Return ONLY a JSON array of names, nothing else.
+Example: ["Aurora", "Luna", "Nova", "Aria", "Sage"]`;
+
+      try {
+        const suggestionResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              { role: 'system', content: 'You are a creative name generator. Return only valid JSON arrays.' },
+              { role: 'user', content: nameSuggestionsPrompt }
+            ],
+          }),
+        });
+
+        if (suggestionResponse.ok) {
+          const suggestionData = await suggestionResponse.json();
+          const suggestionsText = suggestionData.choices[0].message.content.trim();
+          
+          // Extract JSON array from response
+          const jsonMatch = suggestionsText.match(/\[[\s\S]*\]/);
+          if (jsonMatch) {
+            nameSuggestions = JSON.parse(jsonMatch[0]);
+            console.log('Generated name suggestions:', nameSuggestions);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to generate name suggestions:', error);
+      }
+    }
+
     return new Response(
-      JSON.stringify({ message: aiMessage }),
+      JSON.stringify({ 
+        message: aiMessage,
+        nameSuggestions: nameSuggestions.length > 0 ? nameSuggestions : undefined
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {

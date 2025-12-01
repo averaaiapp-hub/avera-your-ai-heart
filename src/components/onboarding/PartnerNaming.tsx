@@ -1,14 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 
 interface PartnerNamingProps {
+  partnerData: {
+    name?: string;
+    gender?: string;
+    personality?: string;
+    preference?: string;
+  };
   onNext: (name: string) => void;
 }
 
-export const PartnerNaming = ({ onNext }: PartnerNamingProps) => {
-  const [name, setName] = useState('');
+export const PartnerNaming = ({ partnerData, onNext }: PartnerNamingProps) => {
+  const [name, setName] = useState(partnerData.name || '');
+
+  useEffect(() => {
+    if (partnerData.name && partnerData.name !== name) {
+      setName(partnerData.name);
+    }
+  }, [partnerData.name]);
 
   const handleSubmit = () => {
     if (name.trim()) {
