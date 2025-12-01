@@ -37,30 +37,14 @@ export const useCreatorTracking = () => {
             converted: false,
           }]);
 
-          // Update creator stats
-          const { data: stats } = await supabase
-            .from('creator_stats')
-            .select('*')
-            .eq('creator_code', storedCreatorCode)
-            .single();
-
-          if (stats) {
-            await supabase
-              .from('creator_stats')
-              .update({
-                total_visits: (stats.total_visits || 0) + 1,
-                updated_at: new Date().toISOString(),
-              })
-              .eq('creator_code', storedCreatorCode);
-          } else {
-            await supabase.from('creator_stats').insert([{
-              creator_code: storedCreatorCode,
-              total_visits: 1,
-              total_signups: 0,
-              total_conversions: 0,
-              total_revenue: 0,
-            }]);
-          }
+          // Update creator stats using secure function
+          await supabase.rpc('increment_creator_stats', {
+            p_creator_code: storedCreatorCode,
+            p_visits: 1,
+            p_signups: 0,
+            p_conversions: 0,
+            p_revenue: 0,
+          });
 
           localStorage.setItem('creator_tracked', 'true');
         } catch (error) {
@@ -85,22 +69,14 @@ export const trackSignup = async (userId: string) => {
         .eq('creator_code', creatorCode)
         .is('user_id', null);
 
-      // Update creator stats
-      const { data: stats } = await supabase
-        .from('creator_stats')
-        .select('*')
-        .eq('creator_code', creatorCode)
-        .single();
-
-      if (stats) {
-        await supabase
-          .from('creator_stats')
-          .update({
-            total_signups: (stats.total_signups || 0) + 1,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('creator_code', creatorCode);
-      }
+      // Update creator stats using secure function
+      await supabase.rpc('increment_creator_stats', {
+        p_creator_code: creatorCode,
+        p_visits: 0,
+        p_signups: 1,
+        p_conversions: 0,
+        p_revenue: 0,
+      });
     } catch (error) {
       console.error('Error tracking signup:', error);
     }
@@ -122,23 +98,14 @@ export const trackConversion = async (userId: string, amount: number) => {
         .eq('user_id', userId)
         .eq('creator_code', creatorCode);
 
-      // Update creator stats
-      const { data: stats } = await supabase
-        .from('creator_stats')
-        .select('*')
-        .eq('creator_code', creatorCode)
-        .single();
-
-      if (stats) {
-        await supabase
-          .from('creator_stats')
-          .update({
-            total_conversions: (stats.total_conversions || 0) + 1,
-            total_revenue: parseFloat(stats.total_revenue.toString()) + amount,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('creator_code', creatorCode);
-      }
+      // Update creator stats using secure function
+      await supabase.rpc('increment_creator_stats', {
+        p_creator_code: creatorCode,
+        p_visits: 0,
+        p_signups: 0,
+        p_conversions: 1,
+        p_revenue: amount,
+      });
     } catch (error) {
       console.error('Error tracking conversion:', error);
     }

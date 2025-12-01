@@ -487,6 +487,16 @@ export type Database = {
     Functions: {
       generate_referral_code: { Args: never; Returns: string }
       has_active_subscription: { Args: { user_uuid: string }; Returns: boolean }
+      increment_creator_stats: {
+        Args: {
+          p_conversions?: number
+          p_creator_code: string
+          p_revenue?: number
+          p_signups?: number
+          p_visits?: number
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       emotional_mode:
