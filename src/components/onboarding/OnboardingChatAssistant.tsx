@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Loader2, MessageCircle, X } from 'lucide-react';
+import { Send, Loader2, MessageCircle, X, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import { VoiceRecordButton } from '@/components/chat/VoiceRecordButton';
+import { blobToBase64 } from '@/utils/audioRecorder';
+import { Progress } from '@/components/ui/progress';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -19,16 +22,39 @@ interface OnboardingChatAssistantProps {
     personality?: string;
     preference?: string;
   };
+  onNameSuggestion?: (name: string) => void;
 }
 
-export const OnboardingChatAssistant = ({ currentStep, partnerData }: OnboardingChatAssistantProps) => {
+export const OnboardingChatAssistant = ({ currentStep, partnerData, onNameSuggestion }: OnboardingChatAssistantProps) => {
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const stepLabels = {
+    welcome: 'Getting Started',
+    video: 'Introduction',
+    selection: 'Choose Your Partner',
+    naming: 'Name Your Partner',
+    preferences: 'Set Preferences',
+  };
+
+  const stepNumbers = {
+    welcome: 1,
+    video: 2,
+    selection: 3,
+    naming: 4,
+    preferences: 5,
+  };
+
+  const currentStepNumber = stepNumbers[currentStep];
+  const totalSteps = 5;
+  const progressPercentage = (currentStepNumber / totalSteps) * 100;
 
   useEffect(() => {
     // Send welcome message when step changes
@@ -49,6 +75,8 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData }: Onboarding
           messages: [{ role: 'user', content: 'Hi!' }],
           currentStep,
           partnerData,
+          stepNumber: currentStepNumber,
+          totalSteps,
         }
       });
 
@@ -58,6 +86,10 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData }: Onboarding
         role: 'assistant',
         content: data.message,
       }]);
+
+      if (data.nameSuggestions && Array.isArray(data.nameSuggestions)) {
+        setNameSuggestions(data.nameSuggestions);
+      }
     } catch (error: any) {
       console.error('Error:', error);
       toast({
@@ -70,14 +102,14 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData }: Onboarding
     }
   };
 
-  const sendMessage = async () => {
-    const messageText = input.trim();
-    if (!messageText || loading) return;
+  const sendMessage = async (messageText?: string) => {
+    const textToSend = messageText || input.trim();
+    if (!textToSend || loading) return;
 
     setInput('');
     setLoading(true);
 
-    const userMessage: Message = { role: 'user', content: messageText };
+    const userMessage: Message = { role: 'user', content: textToSend };
     setMessages((prev) => [...prev, userMessage]);
 
     setIsTyping(true);
@@ -88,6 +120,8 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData }: Onboarding
           messages: [...messages, userMessage],
           currentStep,
           partnerData,
+          stepNumber: currentStepNumber,
+          totalSteps,
         }
       });
 
@@ -97,6 +131,10 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData }: Onboarding
         role: 'assistant',
         content: data.message,
       }]);
+
+      if (data.nameSuggestions && Array.isArray(data.nameSuggestions)) {
+        setNameSuggestions(data.nameSuggestions);
+      }
     } catch (error: any) {
       console.error('Error:', error);
       toast({
@@ -104,11 +142,34 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData }: Onboarding
         description: "Unable to reach the guide. Please try again.",
         variant: "destructive",
       });
-      // Remove the user message on error
       setMessages((prev) => prev.slice(0, -1));
     } finally {
       setIsTyping(false);
       setLoading(false);
+    }
+  };
+
+  const handleVoiceRecording = async (audioBlob: Blob, base64Audio: string) => {
+    setIsTranscribing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('voice-to-text', {
+        body: { audio: base64Audio }
+      });
+
+      if (error) throw error;
+
+      if (data.text) {
+        await sendMessage(data.text);
+      }
+    } catch (error: any) {
+      console.error('Transcription error:', error);
+      toast({
+        title: "Transcription failed",
+        description: "Could not convert voice to text",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTranscribing(false);
     }
   };
 
@@ -139,9 +200,15 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData }: Onboarding
             className="fixed bottom-24 right-6 w-96 h-[500px] bg-card border border-border rounded-2xl shadow-elegant z-50 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="bg-gradient-primary text-white p-4 rounded-t-2xl">
-              <h3 className="font-semibold">Your Onboarding Guide ✨</h3>
-              <p className="text-sm opacity-90">I'm here to help you get started!</p>
+            <div className="bg-gradient-primary text-white p-4 rounded-t-2xl space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold">Your Onboarding Guide ✨</h3>
+                <span className="text-xs opacity-80">Step {currentStepNumber}/{totalSteps}</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs opacity-90">{stepLabels[currentStep]}</p>
+                <Progress value={progressPercentage} className="h-1 bg-white/20" />
+              </div>
             </div>
 
             {/* Messages */}
@@ -179,23 +246,61 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData }: Onboarding
                   </div>
                 </motion.div>
               )}
+              
+              {/* Name Suggestions */}
+              {nameSuggestions.length > 0 && currentStep === 'naming' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-2"
+                >
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground px-2">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Suggested names based on your preferences:</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {nameSuggestions.map((name, idx) => (
+                      <Button
+                        key={idx}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          onNameSuggestion?.(name);
+                          toast({
+                            title: "Name selected",
+                            description: `"${name}" sounds perfect! 💫`,
+                          });
+                        }}
+                        className="rounded-full text-xs"
+                      >
+                        {name}
+                      </Button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+              
               <div ref={messagesEndRef} />
             </div>
 
             {/* Input */}
             <div className="border-t border-border bg-card p-4">
               <div className="flex gap-2">
+                <VoiceRecordButton
+                  onRecordingComplete={handleVoiceRecording}
+                  disabled={loading || isTranscribing}
+                />
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  placeholder="Ask me anything..."
-                  disabled={loading}
+                  onKeyPress={(e) => e.key === 'Enter' && !loading && sendMessage()}
+                  placeholder={isTranscribing ? "Transcribing..." : "Ask me anything..."}
+                  disabled={loading || isTranscribing}
                   className="flex-1 rounded-full bg-background"
                 />
                 <Button
-                  onClick={sendMessage}
-                  disabled={loading || !input.trim()}
+                  onClick={() => sendMessage()}
+                  disabled={loading || !input.trim() || isTranscribing}
                   className="bg-gradient-primary text-white rounded-full px-4"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
