@@ -260,6 +260,7 @@ export type Database = {
           conversation_id: string
           created_at: string | null
           emotional_mode: Database["public"]["Enums"]["emotional_mode"] | null
+          gift_id: string | null
           id: string
           role: Database["public"]["Enums"]["message_role"]
         }
@@ -269,6 +270,7 @@ export type Database = {
           conversation_id: string
           created_at?: string | null
           emotional_mode?: Database["public"]["Enums"]["emotional_mode"] | null
+          gift_id?: string | null
           id?: string
           role: Database["public"]["Enums"]["message_role"]
         }
@@ -278,6 +280,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string | null
           emotional_mode?: Database["public"]["Enums"]["emotional_mode"] | null
+          gift_id?: string | null
           id?: string
           role?: Database["public"]["Enums"]["message_role"]
         }
@@ -287,6 +290,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_gift_id_fkey"
+            columns: ["gift_id"]
+            isOneToOne: false
+            referencedRelation: "gift_types"
             referencedColumns: ["id"]
           },
         ]

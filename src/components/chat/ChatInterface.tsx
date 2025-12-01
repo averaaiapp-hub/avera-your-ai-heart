@@ -310,6 +310,136 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
     }
   };
 
+  const sendGift = async (giftId: string) => {
+    if (!user || !conversationId) return;
+
+    try {
+      setLoading(true);
+
+      // Check credits
+      if (freeMessages <= 0) {
+        onCreditsExhausted();
+        return;
+      }
+
+      // Get gift details
+      const { data: gift } = await supabase
+        .from('gift_types')
+        .select('*')
+        .eq('id', giftId)
+        .single();
+
+      if (!gift) throw new Error('Gift not found');
+
+      // Record gift sent
+      await supabase
+        .from('gifts_sent')
+        .insert([{
+          sender_id: user.id,
+          conversation_id: conversationId,
+          gift_type_id: giftId,
+        }]);
+
+      // Create message for the gift
+      const { data: giftMessage } = await supabase
+        .from('messages')
+        .insert([{
+          conversation_id: conversationId,
+          role: 'user' as const,
+          content: `Sent a ${gift.name}`,
+          gift_id: giftId,
+        }])
+        .select()
+        .single();
+
+      if (giftMessage) {
+        setMessages((prev) => [...prev, giftMessage as Message]);
+      }
+
+      // Update credits
+      const { data: credits } = await supabase
+        .from('message_credits')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      await supabase
+        .from('message_credits')
+        .update({
+          free_messages_remaining: freeMessages - gift.cost_credits,
+          total_messages_sent: (credits?.total_messages_sent || 0) + 1,
+        })
+        .eq('user_id', user.id);
+
+      setFreeMessages(prev => prev - gift.cost_credits);
+
+      // Get AI response to gift
+      setIsTyping(true);
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('chat', {
+        body: {
+          messages: [{ role: 'user', content: `I sent you a ${gift.name} ${gift.icon}` }],
+          emotionalMode,
+          requestVoice: true,
+        }
+      });
+
+      if (aiError) throw aiError;
+
+      const aiMessage = aiResponse.message;
+      const aiAudioBase64 = aiResponse.audio;
+
+      // Upload AI audio if provided
+      let aiAudioUrl = null;
+      if (aiAudioBase64) {
+        const binaryString = atob(aiAudioBase64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const aiAudioBlob = new Blob([bytes], { type: 'audio/mpeg' });
+        
+        const aiFileName = `${user.id}/ai_${Date.now()}.mp3`;
+        const { data: aiUploadData, error: aiUploadError } = await supabase.storage
+          .from('voice-messages')
+          .upload(aiFileName, aiAudioBlob);
+
+        if (!aiUploadError && aiUploadData) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('voice-messages')
+            .getPublicUrl(aiUploadData.path);
+          aiAudioUrl = publicUrl;
+        }
+      }
+
+      const { data: aiMsg } = await supabase
+        .from('messages')
+        .insert([{
+          conversation_id: conversationId,
+          role: 'assistant' as const,
+          content: aiMessage,
+          emotional_mode: emotionalMode as any,
+          audio_url: aiAudioUrl,
+        }])
+        .select()
+        .single();
+
+      if (aiMsg) {
+        setMessages((prev) => [...prev, aiMsg as Message]);
+      }
+
+      setIsTyping(false);
+    } catch (error: any) {
+      toast({
+        title: "Error sending gift",
+        description: error.message,
+        variant: "destructive",
+      });
+      console.error('Error sending gift:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
