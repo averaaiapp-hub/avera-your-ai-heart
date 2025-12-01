@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Loader2, MessageCircle, X, Sparkles } from 'lucide-react';
+import { Send, Loader2, MessageCircle, X, Sparkles, PartyPopper } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,7 +34,47 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData, onNameSugges
   const [isTyping, setIsTyping] = useState(false);
   const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [celebrate, setCelebrate] = useState(false);
+  const [prevStep, setPrevStep] = useState(currentStep);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Load messages from localStorage on mount
+  useEffect(() => {
+    const savedMessages = localStorage.getItem('onboarding_chat_messages');
+    if (savedMessages) {
+      try {
+        setMessages(JSON.parse(savedMessages));
+      } catch (e) {
+        console.error('Failed to load chat history:', e);
+      }
+    }
+  }, []);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('onboarding_chat_messages', JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Detect step changes and celebrate progress
+  useEffect(() => {
+    if (prevStep !== currentStep && prevStep !== currentStep) {
+      setPrevStep(currentStep);
+      if (messages.length > 0) {
+        // Add a system message about progress
+        const stepMessage: Message = {
+          role: 'assistant',
+          content: `✨ Great progress! You're now on "${stepLabels[currentStep]}". Let me know if you need any help!`
+        };
+        setMessages(prev => [...prev, stepMessage]);
+        
+        // Trigger celebration
+        setCelebrate(true);
+        setTimeout(() => setCelebrate(false), 3000);
+      }
+    }
+  }, [currentStep]);
 
   const stepLabels = {
     welcome: 'Getting Started',
@@ -175,6 +215,49 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData, onNameSugges
 
   return (
     <>
+      {/* Celebration Confetti */}
+      <AnimatePresence>
+        {celebrate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center"
+          >
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ 
+                  x: 0, 
+                  y: 0, 
+                  scale: 0,
+                  rotate: 0 
+                }}
+                animate={{ 
+                  x: (Math.random() - 0.5) * 400,
+                  y: (Math.random() - 0.5) * 400,
+                  scale: [0, 1, 0],
+                  rotate: Math.random() * 360
+                }}
+                transition={{ 
+                  duration: 2,
+                  delay: Math.random() * 0.3,
+                  ease: "easeOut"
+                }}
+                className="absolute"
+              >
+                <PartyPopper 
+                  className="w-6 h-6" 
+                  style={{ 
+                    color: ['#FF5A3C', '#FF8B7B', '#FFB2C3', '#FFD700'][Math.floor(Math.random() * 4)]
+                  }} 
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating Chat Button */}
       <motion.div
         initial={{ scale: 0 }}
@@ -183,9 +266,16 @@ export const OnboardingChatAssistant = ({ currentStep, partnerData, onNameSugges
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-16 h-16 rounded-full bg-gradient-primary text-white shadow-elegant hover:shadow-glow transition-all"
+          className="w-16 h-16 rounded-full bg-gradient-primary text-white shadow-elegant hover:shadow-glow transition-all relative"
         >
           {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+          {celebrate && (
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ repeat: 3, duration: 0.5 }}
+              className="absolute -top-1 -right-1 w-4 h-4 bg-accent rounded-full"
+            />
+          )}
         </Button>
       </motion.div>
 
