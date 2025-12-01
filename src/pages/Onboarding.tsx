@@ -4,6 +4,7 @@ import { VideoIntro } from '@/components/onboarding/VideoIntro';
 import { PartnerSelection } from '@/components/onboarding/PartnerSelection';
 import { PartnerNaming } from '@/components/onboarding/PartnerNaming';
 import { PreferencesScreen } from '@/components/onboarding/PreferencesScreen';
+import { OnboardingSummary } from '@/components/onboarding/OnboardingSummary';
 import { SignUpScreen } from '@/components/onboarding/SignUpScreen';
 import { OnboardingChatAssistant } from '@/components/onboarding/OnboardingChatAssistant';
 
@@ -16,7 +17,7 @@ export default function Onboarding() {
     preference: '',
   });
 
-  const stepNames = ['welcome', 'video', 'selection', 'naming', 'preferences', 'signup'] as const;
+  const stepNames = ['welcome', 'video', 'selection', 'naming', 'preferences', 'summary', 'signup'] as const;
   const currentStepName = stepNames[step] || 'welcome';
 
   const steps = [
@@ -41,6 +42,14 @@ export default function Onboarding() {
         setStep(5);
       }}
     />,
+    <OnboardingSummary
+      partnerData={partnerData}
+      onContinue={() => {
+        setStep(6);
+        localStorage.removeItem('onboarding_chat_messages'); // Clear chat history
+      }}
+      onEdit={() => setStep(2)} // Go back to video/selection
+    />,
     <SignUpScreen
       partnerData={partnerData}
       onComplete={() => (window.location.href = '/chat')}
@@ -50,7 +59,7 @@ export default function Onboarding() {
   return (
     <>
       {steps[step]}
-      {step < 5 && (
+      {step < 6 && (
         <OnboardingChatAssistant 
           currentStep={currentStepName as any}
           partnerData={partnerData}
