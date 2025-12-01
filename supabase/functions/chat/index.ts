@@ -29,11 +29,15 @@ serve(async (req) => {
     }
 
     const { messages, emotionalMode = 'romantic', requestVoice = false } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
-    }
+    // Get user preferences for AI provider
+    const { data: userPrefs } = await supabaseClient
+      .from('user_preferences')
+      .select('use_openai_elevenlabs')
+      .eq('user_id', user.id)
+      .single();
+
+    const useOpenAI = userPrefs?.use_openai_elevenlabs ?? true; // Default to OpenAI
 
     // Get partner info for personality
     const { data: partner } = await supabaseClient
@@ -75,20 +79,52 @@ Important guidelines:
 - Use their name occasionally to create intimacy
 - React naturally to what they share with emotional depth`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages,
-        ],
-      }),
-    });
+    let response;
+    if (useOpenAI) {
+      // Use OpenAI GPT-4.1-mini
+      const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+      if (!OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY not configured');
+      }
+
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4.1-mini-2025-04-14',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages,
+          ],
+          temperature: 0.8,
+          max_completion_tokens: 500,
+        }),
+      });
+    } else {
+      // Use Lovable AI Gateway (Gemini)
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (!LOVABLE_API_KEY) {
+        throw new Error('LOVABLE_API_KEY not configured');
+      }
+
+      response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages,
+          ],
+        }),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -118,22 +154,45 @@ Important guidelines:
     let audioContent = null;
     if (requestVoice && aiMessage && partner) {
       try {
-        const ttsResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/text-to-speech`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': req.headers.get('Authorization') || '',
-          },
-          body: JSON.stringify({
-            text: aiMessage,
-            voice: partner.gender === 'female' ? 'nova' : 'onyx'
-          }),
-        });
+        if (useOpenAI) {
+          // Use ElevenLabs for voice
+          const ttsResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/elevenlabs-tts`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': req.headers.get('Authorization') || '',
+            },
+            body: JSON.stringify({
+              text: aiMessage,
+              personality: personality,
+              gender: partner.gender
+            }),
+          });
 
-        if (ttsResponse.ok) {
-          const ttsData = await ttsResponse.json();
-          audioContent = ttsData.audioContent;
-          console.log('Generated voice response');
+          if (ttsResponse.ok) {
+            const ttsData = await ttsResponse.json();
+            audioContent = ttsData.audioContent;
+            console.log('Generated ElevenLabs voice response');
+          }
+        } else {
+          // Use OpenAI TTS
+          const ttsResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/text-to-speech`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': req.headers.get('Authorization') || '',
+            },
+            body: JSON.stringify({
+              text: aiMessage,
+              voice: partner.gender === 'female' ? 'nova' : 'onyx'
+            }),
+          });
+
+          if (ttsResponse.ok) {
+            const ttsData = await ttsResponse.json();
+            audioContent = ttsData.audioContent;
+            console.log('Generated OpenAI TTS voice response');
+          }
         }
       } catch (error) {
         console.error('Error generating voice:', error);
