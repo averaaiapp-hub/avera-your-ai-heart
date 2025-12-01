@@ -5,6 +5,7 @@ import { PartnerSelection } from '@/components/onboarding/PartnerSelection';
 import { PartnerNaming } from '@/components/onboarding/PartnerNaming';
 import { PreferencesScreen } from '@/components/onboarding/PreferencesScreen';
 import { SignUpScreen } from '@/components/onboarding/SignUpScreen';
+import { OnboardingChatAssistant } from '@/components/onboarding/OnboardingChatAssistant';
 
 export default function Onboarding() {
   const [step, setStep] = useState(0);
@@ -14,6 +15,9 @@ export default function Onboarding() {
     personality: '',
     preference: '',
   });
+
+  const stepNames = ['welcome', 'video', 'selection', 'naming', 'preferences', 'signup'] as const;
+  const currentStepName = stepNames[step] || 'welcome';
 
   const steps = [
     <WelcomeScreen onNext={() => setStep(1)} />,
@@ -42,5 +46,15 @@ export default function Onboarding() {
     />,
   ];
 
-  return steps[step];
+  return (
+    <>
+      {steps[step]}
+      {step < 5 && (
+        <OnboardingChatAssistant 
+          currentStep={currentStepName as any}
+          partnerData={partnerData}
+        />
+      )}
+    </>
+  );
 }
