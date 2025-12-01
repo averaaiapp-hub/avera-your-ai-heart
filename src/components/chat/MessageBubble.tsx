@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { AudioMessage } from './AudioMessage';
+import { GiftMessage } from './GiftMessage';
 
 interface Message {
   id: string;
@@ -7,6 +8,7 @@ interface Message {
   content: string;
   created_at: string;
   audio_url?: string | null;
+  gift_id?: string | null;
 }
 
 interface MessageBubbleProps {
@@ -29,7 +31,9 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
             : 'bg-gradient-primary text-white shadow-soft'
         }`}
       >
-        {message.audio_url ? (
+        {message.gift_id ? (
+          <GiftMessage giftId={message.gift_id} />
+        ) : message.audio_url ? (
           <AudioMessage audioUrl={message.audio_url} />
         ) : (
           <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
