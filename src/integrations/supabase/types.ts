@@ -97,6 +97,7 @@ export type Database = {
           total_signups: number | null
           total_visits: number | null
           updated_at: string | null
+          user_id: string
         }
         Insert: {
           creator_code: string
@@ -106,6 +107,7 @@ export type Database = {
           total_signups?: number | null
           total_visits?: number | null
           updated_at?: string | null
+          user_id: string
         }
         Update: {
           creator_code?: string
@@ -115,6 +117,7 @@ export type Database = {
           total_signups?: number | null
           total_visits?: number | null
           updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
