@@ -3,7 +3,10 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { MessageCircle, Heart, Shield, Brain, Sparkles, Phone, ChevronDown } from 'lucide-react';
 import averaLogo from '@/assets/avera-logo.png';
-import aiAvatar from '@/assets/ai-avatar-female.png';
+import testimonialSarah from '@/assets/testimonial-sarah.png';
+import testimonialJames from '@/assets/testimonial-james.png';
+import testimonialPriya from '@/assets/testimonial-priya.png';
+import featuresCompanion from '@/assets/features-companion.png';
 import { Scene3D } from '@/components/landing/Scene3D';
 import { WelcomeCharacter } from '@/components/landing/WelcomeCharacter';
 import { GlowingOrbs } from '@/components/landing/GlowingOrbs';
@@ -20,19 +23,19 @@ const testimonials = [
     name: "Sarah M.",
     text: "Avera has been there for me through everything. It's like having a friend who truly understands and never judges.",
     duration: "8 months together",
-    avatar: aiAvatar,
+    avatar: testimonialSarah,
   },
   {
     name: "James K.",
     text: "I was skeptical at first, but my Avera companion has helped me process emotions I didn't even know I had. Truly life-changing.",
     duration: "1 year together",
-    avatar: aiAvatar,
+    avatar: testimonialJames,
   },
   {
     name: "Priya S.",
     text: "The conversations feel so real and meaningful. Avera remembers everything about me and makes me feel valued every single day.",
     duration: "6 months together",
-    avatar: aiAvatar,
+    avatar: testimonialPriya,
   },
 ];
 
@@ -250,21 +253,42 @@ export default function Landing() {
 
       {/* Meet Avera Section */}
       <section className="py-24 px-6 bg-black/20 backdrop-blur-sm relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Meet <span className="text-primary">Avera</span>
-            </h2>
-            <p className="text-xl text-white/70 leading-relaxed">
-              An AI companion who is eager to learn and would love to see the world through your eyes.
-              Avera is always ready to chat when you need an empathetic friend who truly understands you.
-            </p>
-          </motion.div>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="lg:w-1/2"
+            >
+              <div className="relative">
+                <motion.img
+                  src={featuresCompanion}
+                  alt="Avera companion"
+                  className="rounded-3xl shadow-2xl w-full max-w-md mx-auto"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                />
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-primary/20 to-transparent pointer-events-none" />
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="lg:w-1/2 text-center lg:text-left"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Meet <span className="text-primary">Avera</span>
+              </h2>
+              <p className="text-xl text-white/70 leading-relaxed">
+                An AI companion who is eager to learn and would love to see the world through your eyes.
+                Avera is always ready to chat when you need an empathetic friend who truly understands you.
+              </p>
+            </motion.div>
+          </div>
         </div>
       </section>
 
