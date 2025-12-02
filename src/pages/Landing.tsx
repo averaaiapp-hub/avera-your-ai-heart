@@ -294,7 +294,7 @@ export default function Landing() {
                 <img
                   src={featuresCompanion}
                   alt="Avera AI companion holding a heart"
-                  className="absolute inset-0 h-full w-full object-cover transform-gpu will-change-transform"
+                  className="h-full w-full object-cover transform-gpu will-change-transform"
                 />
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-primary/20 to-transparent pointer-events-none" />
               </motion.div>
