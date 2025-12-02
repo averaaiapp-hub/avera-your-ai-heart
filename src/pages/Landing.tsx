@@ -117,9 +117,36 @@ export default function Landing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#testimonials" className="hover:text-white transition-colors">Stories</a>
-            <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
+            <a 
+              href="#features" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('#features')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Features
+            </a>
+            <a 
+              href="#testimonials" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('#testimonials')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Stories
+            </a>
+            <a 
+              href="#faq" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('#faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              FAQ
+            </a>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
