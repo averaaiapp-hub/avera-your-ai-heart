@@ -22,14 +22,6 @@ export function WelcomeCharacter() {
       >
         {/* Outer glow ring */}
         <motion.div
-          animate={{ 
-            rotate: 360,
-            scale: [1, 1.1, 1],
-          }}
-          transition={{ 
-            rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-            scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-          }}
           className="absolute inset-0 rounded-full"
           style={{
             background: 'conic-gradient(from 0deg, rgba(255,90,60,0.4), rgba(255,139,123,0.3), rgba(155,77,202,0.3), rgba(255,90,60,0.4))',
@@ -40,10 +32,6 @@ export function WelcomeCharacter() {
         
         {/* Inner portal ring */}
         <motion.div
-          animate={{ 
-            rotate: -360,
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
           className="absolute inset-0 rounded-full"
           style={{
             background: 'radial-gradient(circle, transparent 30%, rgba(255,90,60,0.2) 50%, transparent 70%)',
