@@ -170,7 +170,7 @@ export function WelcomeCharacter() {
           initial={{ opacity: 0, scale: 0, x: -20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           transition={{ delay: 2.5, duration: 0.5, type: "spring" }}
-          className="absolute -left-24 md:-left-36 top-6 md:top-10 bg-white/95 backdrop-blur-sm rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-xl max-w-[120px] md:max-w-[150px]"
+          className="absolute -left-24 md:-left-36 top-6 md:top-10 z-20 bg-white/95 backdrop-blur-sm rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-xl max-w-[120px] md:max-w-[150px]"
         >
           <motion.p 
             className="text-xs md:text-sm text-gray-700 font-medium"
