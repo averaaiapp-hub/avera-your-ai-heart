@@ -6,11 +6,13 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Loader2, Sparkles, Zap, LogOut } from 'lucide-react';
 
 export default function Settings() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [useOpenAI, setUseOpenAI] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -78,6 +80,24 @@ export default function Settings() {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: 'Signed out',
+        description: 'You have been signed out successfully',
+      });
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to sign out',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -159,6 +179,15 @@ export default function Settings() {
         className="w-full"
       >
         Back to Chat
+      </Button>
+
+      <Button
+        variant="destructive"
+        onClick={handleSignOut}
+        className="w-full"
+      >
+        <LogOut className="w-4 h-4 mr-2" />
+        Sign Out
       </Button>
     </div>
   );
