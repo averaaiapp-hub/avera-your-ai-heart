@@ -5,7 +5,7 @@ import { MessageCircle, Heart, Shield, Brain, Sparkles, Phone, ChevronDown } fro
 import averaLogo from '@/assets/avera-logo.png';
 import aiAvatar from '@/assets/ai-avatar-female.png';
 import { Scene3D } from '@/components/landing/Scene3D';
-import { FloatingAvatars } from '@/components/landing/FloatingAvatars';
+import { WelcomeCharacter } from '@/components/landing/WelcomeCharacter';
 import { GlowingOrbs } from '@/components/landing/GlowingOrbs';
 import { MobileMenu } from '@/components/landing/MobileMenu';
 import {
@@ -170,8 +170,8 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col items-center justify-center relative px-6 pt-20">
-        {/* Floating avatar decorations */}
-        <FloatingAvatars />
+        {/* Welcoming character */}
+        <WelcomeCharacter />
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}

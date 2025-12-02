@@ -2,7 +2,6 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Sphere, MeshDistortMaterial, Stars } from '@react-three/drei';
 import { useRef, Suspense } from 'react';
 import * as THREE from 'three';
-import { Character3D } from './Character3D';
 
 function FloatingOrb({ position, color, scale = 1, speed = 1 }: { 
   position: [number, number, number]; 
@@ -88,7 +87,6 @@ function HeartParticles() {
   useFrame((state) => {
     if (particlesRef.current) {
       particlesRef.current.rotation.y = state.clock.elapsedTime * 0.02;
-      // Make particles float upward
       const posArray = particlesRef.current.geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < particleCount; i++) {
         posArray[i * 3 + 1] += 0.01;
@@ -133,15 +131,12 @@ export function Scene3D() {
           <pointLight position={[-10, -10, -5]} intensity={0.5} color="#ff5a3c" />
           <pointLight position={[5, 5, 5]} intensity={0.3} color="#ff7eb3" />
           
-          {/* 3D Characters - Male and Female welcoming */}
-          <Character3D position={[-3.5, -0.5, 0]} gender="female" scale={0.9} />
-          <Character3D position={[3.5, -0.5, 0]} gender="male" scale={0.95} />
-          
-          {/* Smaller floating orbs for atmosphere */}
-          <FloatingOrb position={[0, 3, -5]} color="#ff5a3c" scale={0.4} speed={1.2} />
-          <FloatingOrb position={[-5, 1, -6]} color="#ff8b7b" scale={0.3} speed={0.8} />
-          <FloatingOrb position={[5, -2, -7]} color="#9b4dca" scale={0.35} speed={1.5} />
-          <FloatingOrb position={[0, -3, -6]} color="#ffb2c3" scale={0.25} speed={1} />
+          {/* Floating orbs for atmosphere */}
+          <FloatingOrb position={[-4, 2, -5]} color="#ff5a3c" scale={0.5} speed={1.2} />
+          <FloatingOrb position={[4, -1, -6]} color="#ff8b7b" scale={0.4} speed={0.8} />
+          <FloatingOrb position={[-3, -2, -7]} color="#9b4dca" scale={0.45} speed={1.5} />
+          <FloatingOrb position={[3, 3, -6]} color="#ffb2c3" scale={0.35} speed={1} />
+          <FloatingOrb position={[0, -3, -8]} color="#6b2c91" scale={0.5} speed={0.7} />
           
           {/* Particle effects */}
           <ParticleField />
