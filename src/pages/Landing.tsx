@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -117,14 +117,6 @@ const companionImages = [
 export default function Landing() {
   const navigate = useNavigate();
   const [currentCompanionImage, setCurrentCompanionImage] = useState(0);
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setCurrentCompanionImage((prev) => (prev + 1) % companionImages.length);
-    }, 3500);
-
-    return () => window.clearInterval(interval);
-  }, []);
 
   return (
     <div className="min-h-screen bg-landing-gradient overflow-x-hidden">
