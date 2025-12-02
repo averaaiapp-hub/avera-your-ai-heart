@@ -71,8 +71,10 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${errorText}`);
+      // Log detailed error server-side only
+      console.error('OpenAI API error:', response.status, errorText);
+      // Return generic message to client
+      throw new Error('Voice transcription failed. Please try again.');
     }
 
     const result = await response.json();

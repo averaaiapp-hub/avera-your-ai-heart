@@ -29,6 +29,33 @@ serve(async (req) => {
     }
 
     const { messages, emotionalMode = 'romantic', requestVoice = false } = await req.json();
+    
+    // Input validation
+    if (!Array.isArray(messages) || messages.length > 50) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid messages format or too many messages' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Validate message content length
+    for (const msg of messages) {
+      if (msg.content && msg.content.length > 5000) {
+        return new Response(
+          JSON.stringify({ error: 'Message content too long' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+    
+    // Validate emotional mode enum
+    const validModes = ['romantic', 'flirty', 'soft', 'deep_emotional', 'playful'];
+    if (emotionalMode && !validModes.includes(emotionalMode)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid emotional mode' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Get user preferences for AI provider
     const { data: userPrefs } = await supabaseClient
