@@ -291,15 +291,11 @@ export default function Landing() {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
-                {companionImages.map((image, index) => (
-                  <motion.img
-                    key={image.alt}
-                    src={image.src}
-                    alt={image.alt}
-                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out transform-gpu will-change-transform will-change-opacity ${index === currentCompanionImage ? 'opacity-100' : 'opacity-0'}`}
-                    initial={false}
-                  />
-                ))}
+                <img
+                  src={featuresCompanion}
+                  alt="Avera AI companion holding a heart"
+                  className="absolute inset-0 h-full w-full object-cover transform-gpu will-change-transform"
+                />
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-primary/20 to-transparent pointer-events-none" />
               </motion.div>
             </motion.div>
