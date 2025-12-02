@@ -2,6 +2,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Sphere, MeshDistortMaterial, Stars } from '@react-three/drei';
 import { useRef, Suspense } from 'react';
 import * as THREE from 'three';
+import { Character3D } from './Character3D';
 
 function FloatingOrb({ position, color, scale = 1, speed = 1 }: { 
   position: [number, number, number]; 
@@ -29,7 +30,7 @@ function FloatingOrb({ position, color, scale = 1, speed = 1 }: {
           roughness={0.2}
           metalness={0.8}
           transparent
-          opacity={0.7}
+          opacity={0.5}
         />
       </Sphere>
     </Float>
@@ -38,18 +39,18 @@ function FloatingOrb({ position, color, scale = 1, speed = 1 }: {
 
 function ParticleField() {
   const particlesRef = useRef<THREE.Points>(null);
-  const particleCount = 200;
+  const particleCount = 150;
   
   const positions = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 20;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+    positions[i * 3] = (Math.random() - 0.5) * 25;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 25;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 25;
   }
 
   useFrame((state) => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.y = state.clock.elapsedTime * 0.02;
+      particlesRef.current.rotation.y = state.clock.elapsedTime * 0.015;
       particlesRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.01) * 0.1;
     }
   });
@@ -63,33 +64,58 @@ function ParticleField() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.03}
-        color="#ff8b7b"
+        size={0.04}
+        color="#ffb2c3"
         transparent
-        opacity={0.6}
+        opacity={0.7}
         sizeAttenuation
       />
     </points>
   );
 }
 
-function AnimatedRing({ position, color }: { position: [number, number, number]; color: string }) {
-  const ringRef = useRef<THREE.Mesh>(null);
+function HeartParticles() {
+  const particlesRef = useRef<THREE.Points>(null);
+  const particleCount = 30;
+  
+  const positions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 15;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 15;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+  }
 
   useFrame((state) => {
-    if (ringRef.current) {
-      ringRef.current.rotation.x = state.clock.elapsedTime * 0.3;
-      ringRef.current.rotation.y = state.clock.elapsedTime * 0.2;
+    if (particlesRef.current) {
+      particlesRef.current.rotation.y = state.clock.elapsedTime * 0.02;
+      // Make particles float upward
+      const posArray = particlesRef.current.geometry.attributes.position.array as Float32Array;
+      for (let i = 0; i < particleCount; i++) {
+        posArray[i * 3 + 1] += 0.01;
+        if (posArray[i * 3 + 1] > 10) {
+          posArray[i * 3 + 1] = -10;
+        }
+      }
+      particlesRef.current.geometry.attributes.position.needsUpdate = true;
     }
   });
 
   return (
-    <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.8}>
-      <mesh ref={ringRef} position={position}>
-        <torusGeometry args={[1.2, 0.05, 16, 100]} />
-        <meshStandardMaterial color={color} metalness={0.9} roughness={0.1} transparent opacity={0.5} />
-      </mesh>
-    </Float>
+    <points ref={particlesRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[positions, 3]}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.08}
+        color="#ff6b9d"
+        transparent
+        opacity={0.8}
+        sizeAttenuation
+      />
+    </points>
   );
 }
 
@@ -97,31 +123,32 @@ export function Scene3D() {
   return (
     <div className="absolute inset-0 z-0">
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 45 }}
+        camera={{ position: [0, 0, 10], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: 'transparent' }}
       >
         <Suspense fallback={null}>
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={0.6} />
           <directionalLight position={[10, 10, 5]} intensity={1} />
           <pointLight position={[-10, -10, -5]} intensity={0.5} color="#ff5a3c" />
+          <pointLight position={[5, 5, 5]} intensity={0.3} color="#ff7eb3" />
           
-          {/* Main floating orbs */}
-          <FloatingOrb position={[3, 1, -2]} color="#ff5a3c" scale={0.8} speed={1.2} />
-          <FloatingOrb position={[-3.5, -0.5, -3]} color="#ff8b7b" scale={0.6} speed={0.8} />
-          <FloatingOrb position={[4, -2, -4]} color="#9b4dca" scale={0.5} speed={1.5} />
-          <FloatingOrb position={[-2, 2, -2]} color="#ffb2c3" scale={0.4} speed={1} />
-          <FloatingOrb position={[0, -3, -5]} color="#6b2c91" scale={0.7} speed={0.7} />
+          {/* 3D Characters - Male and Female welcoming */}
+          <Character3D position={[-3.5, -0.5, 0]} gender="female" scale={0.9} />
+          <Character3D position={[3.5, -0.5, 0]} gender="male" scale={0.95} />
           
-          {/* Animated rings */}
-          <AnimatedRing position={[2.5, 0.5, -3]} color="#ff5a3c" />
-          <AnimatedRing position={[-2, -1.5, -4]} color="#9b4dca" />
+          {/* Smaller floating orbs for atmosphere */}
+          <FloatingOrb position={[0, 3, -5]} color="#ff5a3c" scale={0.4} speed={1.2} />
+          <FloatingOrb position={[-5, 1, -6]} color="#ff8b7b" scale={0.3} speed={0.8} />
+          <FloatingOrb position={[5, -2, -7]} color="#9b4dca" scale={0.35} speed={1.5} />
+          <FloatingOrb position={[0, -3, -6]} color="#ffb2c3" scale={0.25} speed={1} />
           
-          {/* Particle field */}
+          {/* Particle effects */}
           <ParticleField />
+          <HeartParticles />
           
           {/* Background stars */}
-          <Stars radius={50} depth={50} count={1000} factor={4} saturation={0} fade speed={0.5} />
+          <Stars radius={50} depth={50} count={800} factor={4} saturation={0} fade speed={0.3} />
         </Suspense>
       </Canvas>
     </div>
