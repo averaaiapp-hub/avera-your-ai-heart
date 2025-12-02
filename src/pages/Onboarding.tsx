@@ -7,8 +7,26 @@ import { PreferencesScreen } from '@/components/onboarding/PreferencesScreen';
 import { OnboardingSummary } from '@/components/onboarding/OnboardingSummary';
 import { SignUpScreen } from '@/components/onboarding/SignUpScreen';
 import { OnboardingChatAssistant } from '@/components/onboarding/OnboardingChatAssistant';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Onboarding() {
+  const { user } = useAuth();
+  
+  // If user is authenticated, wrap in ProtectedRoute to prevent access after onboarding is complete
+  // If not authenticated, allow access for signup flow
+  if (user) {
+    return (
+      <ProtectedRoute requireOnboarding={false}>
+        <OnboardingContent />
+      </ProtectedRoute>
+    );
+  }
+  
+  return <OnboardingContent />;
+}
+
+function OnboardingContent() {
   const [step, setStep] = useState(0);
   const [partnerData, setPartnerData] = useState({
     name: '',
