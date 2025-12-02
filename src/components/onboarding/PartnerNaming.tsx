@@ -30,22 +30,22 @@ export const PartnerNaming = ({ partnerData, onNext }: PartnerNamingProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+    <div className="min-h-screen bg-background px-4 py-6 sm:p-6 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12 overflow-y-auto">
       {/* Character image */}
       <motion.div
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="relative"
+        className="relative flex-shrink-0"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl rounded-full scale-110" />
         <img
           src={onboardingNaming}
           alt="AI companion excited"
-          className="relative w-56 h-72 md:w-64 md:h-80 object-cover rounded-3xl shadow-xl"
+          className="relative w-32 h-40 sm:w-56 sm:h-72 md:w-64 md:h-80 object-cover rounded-2xl sm:rounded-3xl shadow-xl"
         />
         <motion.div
-          className="absolute -top-2 -right-2 text-2xl"
+          className="absolute -top-2 -right-2 text-xl sm:text-2xl"
           animate={{ scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
@@ -57,29 +57,29 @@ export const PartnerNaming = ({ partnerData, onNext }: PartnerNamingProps) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full space-y-8"
+        className="max-w-md w-full space-y-6 sm:space-y-8"
       >
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold">Name Your Partner</h2>
-          <p className="text-muted-foreground">
+        <div className="text-center space-y-2 sm:space-y-4">
+          <h2 className="text-2xl sm:text-3xl font-bold">Name Your Partner</h2>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Give your AI companion a name that feels special to you
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Input
             type="text"
             placeholder="Enter a name..."
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="text-center text-2xl h-16 rounded-2xl"
+            className="text-center text-xl sm:text-2xl h-14 sm:h-16 rounded-2xl"
             maxLength={20}
           />
 
           <Button
             onClick={handleSubmit}
             disabled={!name.trim()}
-            className="w-full bg-gradient-primary text-white py-6 text-lg rounded-2xl shadow-glow"
+            className="w-full bg-gradient-primary text-white py-5 sm:py-6 text-base sm:text-lg rounded-2xl shadow-glow active:scale-98"
           >
             Continue
           </Button>

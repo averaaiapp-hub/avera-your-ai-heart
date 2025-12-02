@@ -117,5 +117,26 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Safe area support for notched devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Active scale utility for touch feedback */
+@layer utilities {
+  .active\:scale-98:active {
+    transform: scale(0.98);
+  }
+  
+  .active\:scale-95:active {
+    transform: scale(0.95);
   }
 }
