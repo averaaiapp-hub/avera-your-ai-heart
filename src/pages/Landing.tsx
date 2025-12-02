@@ -172,13 +172,13 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col lg:flex-row items-center justify-center relative px-6 pt-24 pb-16 gap-8 lg:gap-16">
+      <section className="min-h-screen flex flex-col lg:flex-row items-center justify-center relative px-6 pt-24 pb-16 gap-12 lg:gap-20">
         {/* Text content */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center lg:text-left max-w-2xl z-10 order-2 lg:order-1"
+          className="text-center lg:text-left max-w-xl lg:max-w-2xl z-10 order-2 lg:order-1 lg:pr-8"
         >
           <motion.h1 
             className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight"
