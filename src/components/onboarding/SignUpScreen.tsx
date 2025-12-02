@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { trackSignup } from '@/hooks/useCreatorTracking';
+import { z } from 'zod';
 
 interface SignUpScreenProps {
   onComplete: () => void;
@@ -33,11 +34,21 @@ export const SignUpScreen = ({ onComplete, partnerData }: SignUpScreenProps) => 
     }
   };
 
+  const signupSchema = z.object({
+    email: z.string().trim().email('Please enter a valid email address'),
+    password: z.string()
+      .min(8, 'Password must be at least 8 characters long')
+      .regex(/[A-Za-z]/, 'Password must contain at least one letter')
+      .regex(/[0-9]/, 'Password must contain at least one number'),
+  });
+
   const handleSignUp = async () => {
-    if (!email || !password) {
+    // Validate input with zod
+    const result = signupSchema.safeParse({ email, password });
+    if (!result.success) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all fields",
+        title: "Invalid Input",
+        description: result.error.issues[0].message,
         variant: "destructive",
       });
       return;

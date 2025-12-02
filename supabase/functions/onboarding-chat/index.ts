@@ -6,13 +6,71 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Simple in-memory rate limiter
+const requestCounts = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 20; // requests per window
+const RATE_WINDOW = 60000; // 1 minute in ms
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = requestCounts.get(ip);
+  
+  if (!record || now > record.resetTime) {
+    requestCounts.set(ip, { count: 1, resetTime: now + RATE_WINDOW });
+    return true;
+  }
+  
+  if (record.count >= RATE_LIMIT) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Rate limiting for unauthenticated endpoint
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    if (!checkRateLimit(ip)) {
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please wait a moment before trying again.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { messages, currentStep, partnerData, stepNumber, totalSteps } = await req.json();
+    
+    // Input validation
+    if (!Array.isArray(messages) || messages.length > 50) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid messages format or too many messages' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Validate message content length
+    for (const msg of messages) {
+      if (msg.content && msg.content.length > 2000) {
+        return new Response(
+          JSON.stringify({ error: 'Message content too long' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+    
+    // Validate enum values
+    const validSteps = ['welcome', 'video', 'selection', 'naming', 'preferences'];
+    if (currentStep && !validSteps.includes(currentStep)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid step value' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     // Default to OpenAI for onboarding
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');

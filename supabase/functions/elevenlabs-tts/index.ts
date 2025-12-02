@@ -39,8 +39,37 @@ serve(async (req) => {
   try {
     const { text, personality = 'romantic_soft', gender = 'female' } = await req.json();
 
-    if (!text) {
-      throw new Error('Text is required');
+    // Input validation
+    if (!text || typeof text !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Text is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (text.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: 'Text too long (max 5000 characters)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Validate personality and gender enums
+    const validPersonalities = ['romantic_soft', 'flirty_playful', 'supportive_caring', 'bold_passionate', 'chaos_fun'];
+    const validGenders = ['female', 'male', 'non_binary'];
+    
+    if (personality && !validPersonalities.includes(personality)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid personality type' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (gender && !validGenders.includes(gender)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid gender type' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
