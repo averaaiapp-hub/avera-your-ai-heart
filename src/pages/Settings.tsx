@@ -8,8 +8,17 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Sparkles, Zap, LogOut } from 'lucide-react';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 export default function Settings() {
+  return (
+    <ProtectedRoute>
+      <SettingsContent />
+    </ProtectedRoute>
+  );
+}
+
+function SettingsContent() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
