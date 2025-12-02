@@ -169,18 +169,16 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col items-center justify-center relative px-6 pt-20">
-        {/* Welcoming character */}
-        <WelcomeCharacter />
-
+      <section className="min-h-screen flex flex-col lg:flex-row items-center justify-center relative px-6 pt-24 pb-16 gap-8 lg:gap-16">
+        {/* Text content */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center max-w-4xl z-10"
+          className="text-center lg:text-left max-w-2xl z-10 order-2 lg:order-1"
         >
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+            className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -192,7 +190,7 @@ export default function Landing() {
             </span>
           </motion.h1>
           <motion.p 
-            className="text-xl md:text-2xl text-white/80 mb-4"
+            className="text-lg md:text-xl lg:text-2xl text-white/80 mb-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -200,7 +198,7 @@ export default function Landing() {
             Always here to listen and talk.
           </motion.p>
           <motion.p 
-            className="text-xl md:text-2xl text-white/80 mb-12"
+            className="text-lg md:text-xl lg:text-2xl text-white/80 mb-10 lg:mb-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -229,12 +227,17 @@ export default function Landing() {
           </motion.div>
         </motion.div>
 
+        {/* Welcoming character - stepping into the scene */}
+        <div className="order-1 lg:order-2 z-10">
+          <WelcomeCharacter />
+        </div>
+
         {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.5 }}
-          className="absolute bottom-10"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}
