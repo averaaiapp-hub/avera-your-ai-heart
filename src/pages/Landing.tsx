@@ -172,7 +172,7 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col lg:flex-row items-center justify-center relative px-6 pt-24 pb-16 gap-8 lg:gap-16">
+      <section className="min-h-screen flex flex-col lg:flex-row items-center justify-center relative px-6 pt-24 pb-6 gap-8 lg:gap-16">
         {/* Text content */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -252,7 +252,7 @@ export default function Landing() {
       </section>
 
       {/* Meet Avera Section */}
-      <section className="py-24 px-6 bg-black/20 backdrop-blur-sm relative z-10">
+      <section className="pt-10 pb-16 px-6 bg-black/20 backdrop-blur-sm relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <motion.div
