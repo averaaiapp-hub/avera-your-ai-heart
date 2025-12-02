@@ -11,7 +11,7 @@ import featuresCompanion from '@/assets/features-companion.png';
 import onboardingWelcome from '@/assets/onboarding-welcome.png';
 import onboardingSelection from '@/assets/onboarding-selection.png';
 import onboardingPreferences from '@/assets/onboarding-preferences.png';
-import meetAveraHeartBack from '@/assets/meet-avera-heart-back.png';
+import meetAveraHeartFront from '@/assets/meet-avera-heart-front.png';
 import { Scene3D } from '@/components/landing/Scene3D';
 import { WelcomeCharacter } from '@/components/landing/WelcomeCharacter';
 import { GlowingOrbs } from '@/components/landing/GlowingOrbs';
@@ -293,8 +293,8 @@ export default function Landing() {
                 transition={{ duration: 0.3 }}
               >
                 <img
-                  src={meetAveraHeartBack}
-                  alt="Avera AI companion looking back with a soft smile holding a glowing heart"
+                  src={meetAveraHeartFront}
+                  alt="Avera AI companion facing forward holding a glowing heart"
                   className="h-full w-full object-cover transform-gpu will-change-transform"
                 />
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-primary/20 to-transparent pointer-events-none" />
