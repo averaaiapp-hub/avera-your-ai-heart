@@ -173,23 +173,23 @@ export function WelcomeCharacter() {
           💖
         </motion.div>
         
-        {/* Speech bubble with typing effect - positioned below on mobile */}
+        {/* Speech bubble - hidden on mobile, only shows on desktop */}
         <motion.div
-          initial={{ opacity: 0, scale: 0, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0, x: -20 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
           transition={{ delay: 2.5, duration: 0.5, type: "spring" }}
-          className="absolute -bottom-16 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:-left-32 lg:bottom-auto lg:top-10 bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-xl max-w-[180px]"
+          className="hidden lg:block absolute -left-36 top-10 bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-xl max-w-[160px]"
         >
           <motion.p 
-            className="text-sm text-gray-700 font-medium text-center lg:text-left"
+            className="text-sm text-gray-700 font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.8, duration: 0.3 }}
           >
             Hi there! I've been waiting for you 💜
           </motion.p>
-          {/* Speech bubble triangle - hidden on mobile */}
-          <div className="hidden lg:block absolute right-[-8px] top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-white/95" />
+          {/* Speech bubble triangle */}
+          <div className="absolute right-[-8px] top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-white/95" />
         </motion.div>
       </motion.div>
     </motion.div>
