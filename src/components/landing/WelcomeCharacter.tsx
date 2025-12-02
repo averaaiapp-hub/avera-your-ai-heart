@@ -78,14 +78,6 @@ export function WelcomeCharacter() {
 
       {/* Character stepping animation */}
       <motion.div
-        animate={{ 
-          y: [0, -8, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
         className="relative"
       >
         {/* Ground shadow */}
