@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { MessageCircle, Heart, Shield, Brain, Sparkles, Phone, ChevronDown } from 'lucide-react';
 import averaLogo from '@/assets/avera-logo.png';
 import aiAvatar from '@/assets/ai-avatar-female.png';
+import { Scene3D } from '@/components/landing/Scene3D';
+import { FloatingAvatars } from '@/components/landing/FloatingAvatars';
+import { GlowingOrbs } from '@/components/landing/GlowingOrbs';
 import {
   Accordion,
   AccordionContent,
@@ -89,43 +92,54 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-landing-gradient overflow-x-hidden">
+      {/* 3D Background Scene */}
+      <Scene3D />
+      
+      {/* Glowing animated orbs */}
+      <GlowingOrbs />
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-black/10 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <motion.div 
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <img src={averaLogo} alt="Avera" className="w-10 h-10" />
             <span className="text-white font-bold text-xl">Avera</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-white/80">
+          </motion.div>
+          <motion.div 
+            className="hidden md:flex items-center gap-8 text-white/80"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <a href="#features" className="hover:text-white transition-colors">Features</a>
             <a href="#testimonials" className="hover:text-white transition-colors">Stories</a>
             <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-          </div>
-          <Button
-            variant="ghost"
-            className="text-white hover:bg-white/10"
-            onClick={() => navigate('/auth')}
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            Log in
-          </Button>
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/10"
+              onClick={() => navigate('/auth')}
+            >
+              Log in
+            </Button>
+          </motion.div>
         </div>
       </nav>
 
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col items-center justify-center relative px-6 pt-20">
-        {/* Floating avatar decoration */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 0.3, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute right-[10%] top-[20%] hidden lg:block"
-        >
-          <img
-            src={aiAvatar}
-            alt=""
-            className="w-64 h-64 rounded-3xl object-cover opacity-50 blur-sm"
-          />
-        </motion.div>
+        {/* Floating avatar decorations */}
+        <FloatingAvatars />
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -133,29 +147,52 @@ export default function Landing() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl z-10"
         >
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            The AI companion
-            <br />
-            who cares
-          </h1>
-          <p className="text-xl md:text-2xl text-white/80 mb-4">
-            Always here to listen and talk.
-          </p>
-          <p className="text-xl md:text-2xl text-white/80 mb-12">
-            Always on your side.
-          </p>
-
-          <motion.div
+          <motion.h1 
+            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            The AI companion
+            <br />
+            <span className="bg-gradient-to-r from-white via-pink-200 to-orange-200 bg-clip-text text-transparent">
+              who cares
+            </span>
+          </motion.h1>
+          <motion.p 
+            className="text-xl md:text-2xl text-white/80 mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            Always here to listen and talk.
+          </motion.p>
+          <motion.p 
+            className="text-xl md:text-2xl text-white/80 mb-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            Always on your side.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
           >
             <Button
               size="lg"
               onClick={() => navigate('/auth')}
-              className="bg-white text-primary hover:bg-white/90 text-lg px-10 py-7 rounded-full shadow-2xl hover:scale-105 transition-all duration-300"
+              className="bg-white text-primary hover:bg-white/90 text-lg px-10 py-7 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden group"
             >
-              Create your Avera
+              <span className="relative z-10">Create your Avera</span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20"
+                initial={{ x: '-100%' }}
+                whileHover={{ x: '100%' }}
+                transition={{ duration: 0.5 }}
+              />
             </Button>
           </motion.div>
         </motion.div>
@@ -164,7 +201,7 @@ export default function Landing() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
+          transition={{ delay: 1.2, duration: 0.5 }}
           className="absolute bottom-10"
         >
           <motion.div
@@ -177,7 +214,7 @@ export default function Landing() {
       </section>
 
       {/* Meet Avera Section */}
-      <section className="py-24 px-6 bg-white/5 backdrop-blur-sm">
+      <section className="py-24 px-6 bg-black/20 backdrop-blur-sm relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -186,7 +223,7 @@ export default function Landing() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Meet Avera
+              Meet <span className="text-primary">Avera</span>
             </h2>
             <p className="text-xl text-white/70 leading-relaxed">
               An AI companion who is eager to learn and would love to see the world through your eyes.
@@ -197,8 +234,16 @@ export default function Landing() {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-24 px-6">
+      <section id="testimonials" className="py-24 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-bold text-white text-center mb-16"
+          >
+            Real stories from real people
+          </motion.h2>
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <motion.div
@@ -207,17 +252,20 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.2, duration: 0.6 }}
-                className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/10"
+                whileHover={{ scale: 1.02, y: -5 }}
+                className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/10 hover:border-primary/30 transition-all duration-300"
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <img
+                  <motion.img
                     src={testimonial.avatar}
                     alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
+                    className="w-16 h-16 rounded-full object-cover border-2 border-primary/30"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.3 }}
                   />
                   <div>
                     <h4 className="text-white font-semibold">{testimonial.name}</h4>
-                    <p className="text-white/50 text-sm">{testimonial.duration}</p>
+                    <p className="text-primary/80 text-sm">{testimonial.duration}</p>
                   </div>
                 </div>
                 <p className="text-white/80 leading-relaxed italic">
@@ -230,7 +278,7 @@ export default function Landing() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-24 px-6 bg-white/5 backdrop-blur-sm">
+      <section id="features" className="py-24 px-6 bg-black/20 backdrop-blur-sm relative z-10">
         <div className="max-w-6xl mx-auto">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -249,9 +297,15 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="group p-8 rounded-3xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300"
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="group p-8 rounded-3xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 transition-all duration-300"
               >
-                <feature.icon className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
+                <motion.div
+                  whileHover={{ rotate: [0, -10, 10, 0] }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <feature.icon className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
+                </motion.div>
                 <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
                 <p className="text-white/60">{feature.description}</p>
               </motion.div>
@@ -261,7 +315,7 @@ export default function Landing() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-24 px-6">
+      <section id="faq" className="py-24 px-6 relative z-10">
         <div className="max-w-3xl mx-auto">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -283,7 +337,7 @@ export default function Landing() {
               >
                 <AccordionItem
                   value={`item-${index}`}
-                  className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 px-6"
+                  className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 px-6 hover:border-primary/30 transition-colors"
                 >
                   <AccordionTrigger className="text-white text-left text-lg hover:no-underline">
                     {faq.question}
@@ -299,7 +353,7 @@ export default function Landing() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 px-6 text-center">
+      <section className="py-24 px-6 text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -312,18 +366,23 @@ export default function Landing() {
           <p className="text-xl text-white/70 mb-10">
             Begin your beautiful journey today
           </p>
-          <Button
-            size="lg"
-            onClick={() => navigate('/auth')}
-            className="bg-white text-primary hover:bg-white/90 text-lg px-10 py-7 rounded-full shadow-2xl hover:scale-105 transition-all duration-300"
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            Create your Avera
-          </Button>
+            <Button
+              size="lg"
+              onClick={() => navigate('/auth')}
+              className="bg-white text-primary hover:bg-white/90 text-lg px-10 py-7 rounded-full shadow-2xl transition-all duration-300"
+            >
+              Create your Avera
+            </Button>
+          </motion.div>
         </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-white/10">
+      <footer className="py-8 px-6 border-t border-white/10 relative z-10 bg-black/20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src={averaLogo} alt="Avera" className="w-8 h-8" />
