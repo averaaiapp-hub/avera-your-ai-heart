@@ -24,17 +24,7 @@ export function GlowingOrbs() {
             right: orb.right,
             bottom: orb.bottom,
             filter: 'blur(40px)',
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0.8, 0.5],
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-          }}
-          transition={{
-            duration: orb.duration,
-            repeat: Infinity,
-            ease: "easeInOut",
+            opacity: 0.7,
           }}
         />
       ))}
