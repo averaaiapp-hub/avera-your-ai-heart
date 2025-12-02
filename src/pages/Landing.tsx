@@ -7,6 +7,7 @@ import aiAvatar from '@/assets/ai-avatar-female.png';
 import { Scene3D } from '@/components/landing/Scene3D';
 import { FloatingAvatars } from '@/components/landing/FloatingAvatars';
 import { GlowingOrbs } from '@/components/landing/GlowingOrbs';
+import { MobileMenu } from '@/components/landing/MobileMenu';
 import {
   Accordion,
   AccordionContent,
@@ -124,6 +125,7 @@ export default function Landing() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
+            className="hidden md:block"
           >
             <Button
               variant="ghost"
@@ -133,6 +135,9 @@ export default function Landing() {
               Log in
             </Button>
           </motion.div>
+          
+          {/* Mobile menu */}
+          <MobileMenu />
         </div>
       </nav>
 
