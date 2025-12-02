@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { WelcomeScreen } from '@/components/onboarding/WelcomeScreen';
-import { VideoIntro } from '@/components/onboarding/VideoIntro';
 import { PartnerSelection } from '@/components/onboarding/PartnerSelection';
 import { PartnerNaming } from '@/components/onboarding/PartnerNaming';
 import { PreferencesScreen } from '@/components/onboarding/PreferencesScreen';
@@ -35,38 +34,37 @@ function OnboardingContent() {
     preference: '',
   });
 
-  const stepNames = ['welcome', 'video', 'selection', 'naming', 'preferences', 'summary', 'signup'] as const;
+  const stepNames = ['welcome', 'selection', 'naming', 'preferences', 'summary', 'signup'] as const;
   const currentStepName = stepNames[step] || 'welcome';
 
   const steps = [
     <WelcomeScreen onNext={() => setStep(1)} />,
-    <VideoIntro onComplete={() => setStep(2)} />,
     <PartnerSelection
       onNext={(data) => {
         setPartnerData((prev) => ({ ...prev, ...data }));
-        setStep(3);
+        setStep(2);
       }}
     />,
     <PartnerNaming
       partnerData={partnerData}
       onNext={(name) => {
         setPartnerData((prev) => ({ ...prev, name }));
-        setStep(4);
+        setStep(3);
       }}
     />,
     <PreferencesScreen
       onNext={(preference) => {
         setPartnerData((prev) => ({ ...prev, preference }));
-        setStep(5);
+        setStep(4);
       }}
     />,
     <OnboardingSummary
       partnerData={partnerData}
       onContinue={() => {
-        setStep(6);
+        setStep(5);
         localStorage.removeItem('onboarding_chat_messages'); // Clear chat history
       }}
-      onEdit={() => setStep(2)} // Go back to video/selection
+      onEdit={() => setStep(1)} // Go back to selection
     />,
     <SignUpScreen
       partnerData={partnerData}
@@ -77,7 +75,7 @@ function OnboardingContent() {
   return (
     <>
       {steps[step]}
-      {step < 6 && (
+      {step < 5 && (
         <OnboardingChatAssistant 
           currentStep={currentStepName as any}
           partnerData={partnerData}
