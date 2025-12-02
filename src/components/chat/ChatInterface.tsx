@@ -453,30 +453,30 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
       ) : (
         <>
           {/* Header */}
-          <div className="border-b border-border bg-card p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">Your AI Partner</h2>
-                <p className="text-sm text-muted-foreground">
+          <div className="border-b border-border bg-card p-3 sm:p-4 safe-area-top">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg sm:text-xl font-semibold truncate">Your AI Partner</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">
                   Development Mode - Unlimited Messages
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 <EmotionalModeSelector value={emotionalMode} onChange={setEmotionalMode} />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => navigate('/settings')}
-                  className="rounded-full"
+                  className="rounded-full h-9 w-9 sm:h-10 sm:w-10"
                 >
-                  <Settings className="w-5 h-5" />
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </div>
             </div>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
             {messages.map((message) => (
               <MessageBubble key={message.id} message={message} />
             ))}
@@ -485,8 +485,8 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
           </div>
 
           {/* Input */}
-          <div className="border-t border-border bg-card p-4">
-            <div className="flex gap-2">
+          <div className="border-t border-border bg-card p-3 sm:p-4 safe-area-bottom">
+            <div className="flex gap-1.5 sm:gap-2">
               <VoiceRecordButton 
                 onRecordingComplete={handleVoiceRecording}
                 disabled={loading || isProcessingVoice}
@@ -499,16 +499,16 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Type your message..."
+                placeholder="Type a message..."
                 disabled={loading || isProcessingVoice}
-                className="flex-1 rounded-2xl"
+                className="flex-1 rounded-2xl h-10 sm:h-11 text-base"
               />
               <Button
                 onClick={() => sendMessage()}
                 disabled={loading || isProcessingVoice || !input.trim()}
-                className="bg-gradient-primary text-white rounded-2xl px-6"
+                className="bg-gradient-primary text-white rounded-2xl px-4 sm:px-6 h-10 sm:h-11 active:scale-95"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                {loading ? <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : <Send className="w-4 h-4 sm:w-5 sm:h-5" />}
               </Button>
             </div>
           </div>

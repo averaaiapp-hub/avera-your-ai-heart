@@ -160,26 +160,26 @@ export const SignUpScreen = ({ onComplete, partnerData }: SignUpScreenProps) => 
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-background px-4 py-8 sm:p-6 flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full space-y-8"
+        className="max-w-md w-full space-y-6 sm:space-y-8"
       >
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold">Create Your Account</h2>
-          <p className="text-muted-foreground">
+        <div className="text-center space-y-2 sm:space-y-4">
+          <h2 className="text-2xl sm:text-3xl font-bold">Create Your Account</h2>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Almost there! Just a few more details...
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <Input
             type="email"
             placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-12 rounded-2xl"
+            className="h-12 sm:h-14 rounded-2xl text-base"
           />
 
           <Input
@@ -187,13 +187,13 @@ export const SignUpScreen = ({ onComplete, partnerData }: SignUpScreenProps) => 
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-12 rounded-2xl"
+            className="h-12 sm:h-14 rounded-2xl text-base"
           />
 
           <Button
             onClick={handleSignUp}
             disabled={loading}
-            className="w-full bg-gradient-primary text-white py-6 text-lg rounded-2xl shadow-glow"
+            className="w-full bg-gradient-primary text-white py-5 sm:py-6 text-base sm:text-lg rounded-2xl shadow-glow active:scale-98"
           >
             {loading ? (
               <>
