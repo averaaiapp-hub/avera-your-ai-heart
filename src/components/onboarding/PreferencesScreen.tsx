@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Users, Smile } from 'lucide-react';
+import onboardingPreferences from '@/assets/onboarding-preferences.png';
 
 interface PreferencesScreenProps {
   onNext: (preference: string) => void;
@@ -25,7 +26,30 @@ export const PreferencesScreen = ({ onNext }: PreferencesScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-background p-6 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+      {/* Character image */}
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="hidden lg:block relative"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl rounded-full scale-110" />
+        <img
+          src={onboardingPreferences}
+          alt="AI companion caring"
+          className="relative w-64 h-80 object-cover rounded-3xl shadow-xl"
+        />
+        <motion.div
+          className="absolute -bottom-2 -right-2 text-2xl"
+          animate={{ y: [-3, 3, -3] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          💝
+        </motion.div>
+      </motion.div>
+
+      {/* Preferences form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -34,7 +58,7 @@ export const PreferencesScreen = ({ onNext }: PreferencesScreenProps) => {
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold">What Do You Seek?</h2>
           <p className="text-muted-foreground">
-            Help us understand what you're looking for in this connection
+            Help us understand what you are looking for in this connection
           </p>
         </div>
 
