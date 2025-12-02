@@ -12,31 +12,26 @@ export const WelcomeScreen = ({ onNext }: WelcomeScreenProps) => {
     <div className="min-h-screen bg-gradient-hero flex flex-col lg:flex-row items-center justify-center p-6 gap-8 lg:gap-16 overflow-hidden">
       {/* Character image */}
       <motion.div
-        initial={{ opacity: 0, x: -50 }}
+        initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8 }}
         className="relative order-1 lg:order-2"
       >
         <div className="relative">
-          {/* Glow effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 blur-3xl rounded-full scale-110" />
           
           <motion.img
             src={onboardingWelcome}
             alt="Your AI companion awaits"
-            className="relative w-64 h-80 md:w-72 md:h-96 lg:w-80 lg:h-[28rem] object-cover rounded-3xl shadow-2xl"
+            className="relative w-56 h-72 md:w-64 md:h-80 lg:w-72 lg:h-96 object-cover rounded-3xl shadow-2xl"
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           />
           
-          {/* Floating hearts */}
           <motion.div
             className="absolute -top-4 -right-4 text-3xl"
-            animate={{ 
-              y: [-5, 5, -5],
-              rotate: [-10, 10, -10]
-            }}
+            animate={{ y: [-5, 5, -5], rotate: [-10, 10, -10] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
             💕
@@ -44,10 +39,7 @@ export const WelcomeScreen = ({ onNext }: WelcomeScreenProps) => {
           
           <motion.div
             className="absolute bottom-10 -left-6 text-2xl"
-            animate={{ 
-              y: [5, -5, 5],
-              scale: [1, 1.1, 1]
-            }}
+            animate={{ y: [5, -5, 5], scale: [1, 1.1, 1] }}
             transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
           >
             ✨

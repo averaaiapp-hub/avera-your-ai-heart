@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { Heart, Sparkles, Shield, Flame, Zap } from 'lucide-react';
+import onboardingSelection from '@/assets/onboarding-selection.png';
 
 interface PartnerSelectionProps {
   onNext: (data: { gender: string; personality: string }) => void;
@@ -33,11 +34,34 @@ export const PartnerSelection = ({ onNext }: PartnerSelectionProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 flex flex-col">
+    <div className="min-h-screen bg-background p-6 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+      {/* Character image */}
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="hidden lg:block relative"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl rounded-full scale-110" />
+        <img
+          src={onboardingSelection}
+          alt="AI companion thinking"
+          className="relative w-64 h-80 object-cover rounded-3xl shadow-xl"
+        />
+        <motion.div
+          className="absolute -bottom-2 -right-2 text-2xl"
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          🤔
+        </motion.div>
+      </motion.div>
+
+      {/* Selection form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-2xl mx-auto w-full space-y-8 py-8"
+        className="max-w-2xl w-full space-y-8"
       >
         <h2 className="text-3xl font-bold text-center">Choose Your AI Partner</h2>
         
