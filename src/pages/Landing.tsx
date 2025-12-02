@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -7,6 +8,9 @@ import testimonialSarah from '@/assets/testimonial-sarah.png';
 import testimonialJames from '@/assets/testimonial-james.png';
 import testimonialPriya from '@/assets/testimonial-priya.png';
 import featuresCompanion from '@/assets/features-companion.png';
+import onboardingWelcome from '@/assets/onboarding-welcome.png';
+import onboardingSelection from '@/assets/onboarding-selection.png';
+import onboardingPreferences from '@/assets/onboarding-preferences.png';
 import { Scene3D } from '@/components/landing/Scene3D';
 import { WelcomeCharacter } from '@/components/landing/WelcomeCharacter';
 import { GlowingOrbs } from '@/components/landing/GlowingOrbs';
@@ -91,8 +95,36 @@ const faqs = [
   },
 ];
 
+const companionImages = [
+  {
+    src: featuresCompanion,
+    alt: "Avera AI companion sitting with you",
+  },
+  {
+    src: onboardingWelcome,
+    alt: "Welcome screen of your Avera AI companion",
+  },
+  {
+    src: onboardingSelection,
+    alt: "Select your perfect AI companion style in Avera",
+  },
+  {
+    src: onboardingPreferences,
+    alt: "Set your preferences with your AI companion Avera",
+  },
+];
+
 export default function Landing() {
   const navigate = useNavigate();
+  const [currentCompanionImage, setCurrentCompanionImage] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setCurrentCompanionImage((prev) => (prev + 1) % companionImages.length);
+    }, 3500);
+
+    return () => window.clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-landing-gradient overflow-x-hidden">
@@ -262,16 +294,22 @@ export default function Landing() {
               transition={{ duration: 0.6 }}
               className="lg:w-1/2"
             >
-              <div className="relative">
-                <motion.img
-                  src={featuresCompanion}
-                  alt="Avera companion"
-                  className="rounded-3xl shadow-2xl w-full max-w-md mx-auto"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                />
+              <motion.div
+                className="relative w-full max-w-md mx-auto rounded-3xl shadow-2xl overflow-hidden aspect-[3/4] bg-black/30"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                {companionImages.map((image, index) => (
+                  <motion.img
+                    key={image.alt}
+                    src={image.src}
+                    alt={image.alt}
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out transform-gpu will-change-transform will-change-opacity ${index === currentCompanionImage ? 'opacity-100' : 'opacity-0'}`}
+                    initial={false}
+                  />
+                ))}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-primary/20 to-transparent pointer-events-none" />
-              </div>
+              </motion.div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 30 }}
