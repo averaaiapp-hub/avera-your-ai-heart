@@ -8,7 +8,6 @@ import { Scene3D } from '@/components/landing/Scene3D';
 import { WelcomeCharacter } from '@/components/landing/WelcomeCharacter';
 import { GlowingOrbs } from '@/components/landing/GlowingOrbs';
 import { MobileMenu } from '@/components/landing/MobileMenu';
-import { AnimatedBackground } from '@/components/landing/AnimatedBackground';
 import {
   Accordion,
   AccordionContent,
@@ -93,10 +92,7 @@ export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen overflow-x-hidden relative">
-      {/* Animated gradient background */}
-      <AnimatedBackground />
-      
+    <div className="min-h-screen bg-landing-gradient overflow-x-hidden">
       {/* 3D Background Scene */}
       <Scene3D />
       
