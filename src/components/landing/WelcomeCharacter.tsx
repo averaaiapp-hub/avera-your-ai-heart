@@ -6,7 +6,7 @@ export function WelcomeCharacter() {
   const isMobile = useIsMobile();
 
   // On mobile, render a much simpler, static version to avoid flicker
-  if (isMobile) {
+  if (false && isMobile) {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 40 }}
