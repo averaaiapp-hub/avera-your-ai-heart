@@ -36,6 +36,62 @@ export function WelcomeCharacter() {
               '0 20px 60px -20px rgba(255, 90, 60, 0.6), 0 0 40px rgba(155, 77, 202, 0.4)',
           }}
         />
+
+        {/* Floating hearts and sparkles for mobile */}
+        <motion.div
+          className="absolute -top-4 -right-2 text-xl"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            y: [0, -8, 0],
+            rotate: [0, 8, 0],
+          }}
+          transition={{
+            opacity: { delay: 0.8, duration: 0.4 },
+            scale: { delay: 0.8, duration: 0.4 },
+            y: { delay: 1.2, duration: 2, repeat: Infinity, ease: 'easeInOut' },
+            rotate: { delay: 1.2, duration: 2, repeat: Infinity, ease: 'easeInOut' },
+          }}
+        >
+          💕
+        </motion.div>
+
+        <motion.div
+          className="absolute top-4 -left-2 text-lg"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{
+            opacity: 1,
+            scale: [1, 1.1, 1],
+            y: [0, -6, 0],
+          }}
+          transition={{
+            opacity: { delay: 1, duration: 0.4 },
+            scale: { delay: 1.4, duration: 2.2, repeat: Infinity, ease: 'easeInOut' },
+            y: { delay: 1.4, duration: 2.2, repeat: Infinity, ease: 'easeInOut' },
+          }}
+        >
+          ✨
+        </motion.div>
+
+        {/* Speech bubble with greeting for mobile */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0, x: -12 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{ delay: 1.4, duration: 0.45, type: 'spring' }}
+          className="absolute -left-4 top-6 z-20 bg-white/95 backdrop-blur-sm rounded-2xl px-3 py-2 shadow-xl max-w-[140px]"
+        >
+          <motion.p
+            className="text-[10px] leading-snug text-gray-700 font-medium"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.7, duration: 0.25 }}
+          >
+            Hi there! I've been waiting for you 💜
+          </motion.p>
+          {/* Speech bubble triangle */}
+          <div className="absolute right-[-6px] top-3 w-0 h-0 border-t-6 border-t-transparent border-b-6 border-b-transparent border-l-6 border-l-white/95" />
+        </motion.div>
       </motion.div>
     );
   }
