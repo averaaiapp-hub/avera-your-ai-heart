@@ -1,13 +1,51 @@
 import { motion } from 'framer-motion';
 import welcomeCharacter from '@/assets/welcome-character.png';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export function WelcomeCharacter() {
+  const isMobile = useIsMobile();
+
+  // On mobile, render a much simpler, static version to avoid flicker
+  if (isMobile) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{
+          duration: 0.8,
+          ease: [0.25, 0.46, 0.45, 0.94],
+          delay: 0.2,
+        }}
+        className="relative flex-shrink-0"
+      >
+        {/* Simple glow behind character for mobile stability */}
+        <div
+          className="absolute inset-0 -z-10 blur-3xl opacity-70"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(255,90,60,0.45) 0%, rgba(155,77,202,0.35) 45%, transparent 70%)',
+            transform: 'scale(1.4)',
+          }}
+        />
+        <img
+          src={welcomeCharacter}
+          alt="Your AI Companion welcoming you with open arms"
+          className="w-48 md:w-56 lg:w-72 h-auto rounded-3xl shadow-2xl relative z-10"
+          style={{
+            boxShadow:
+              '0 20px 60px -20px rgba(255, 90, 60, 0.6), 0 0 40px rgba(155, 77, 202, 0.4)',
+          }}
+        />
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.3, y: 100, rotateY: -30 }}
       animate={{ opacity: 1, scale: 1, y: 0, rotateY: 0 }}
-      transition={{ 
-        duration: 1.5, 
+      transition={{
+        duration: 1.5,
         ease: [0.25, 0.46, 0.45, 0.94],
         delay: 0.2,
       }}
@@ -24,17 +62,19 @@ export function WelcomeCharacter() {
         <motion.div
           className="absolute inset-0 rounded-full"
           style={{
-            background: 'conic-gradient(from 0deg, rgba(255,90,60,0.4), rgba(255,139,123,0.3), rgba(155,77,202,0.3), rgba(255,90,60,0.4))',
+            background:
+              'conic-gradient(from 0deg, rgba(255,90,60,0.4), rgba(255,139,123,0.3), rgba(155,77,202,0.3), rgba(255,90,60,0.4))',
             filter: 'blur(40px)',
             transform: 'scale(1.5)',
           }}
         />
-        
+
         {/* Inner portal ring */}
         <motion.div
           className="absolute inset-0 rounded-full"
           style={{
-            background: 'radial-gradient(circle, transparent 30%, rgba(255,90,60,0.2) 50%, transparent 70%)',
+            background:
+              'radial-gradient(circle, transparent 30%, rgba(255,90,60,0.2) 50%, transparent 70%)',
             transform: 'scale(1.3)',
           }}
         />
@@ -45,7 +85,7 @@ export function WelcomeCharacter() {
         <motion.div
           key={i}
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
+          animate={{
             opacity: [0, 1, 0],
             scale: [0.5, 1, 0.5],
             x: [0, (i % 2 === 0 ? 1 : -1) * (30 + i * 10)],
@@ -55,7 +95,7 @@ export function WelcomeCharacter() {
             duration: 2,
             repeat: Infinity,
             delay: i * 0.3,
-            ease: "easeOut",
+            ease: 'easeOut',
           }}
           className="absolute top-1/2 left-1/2 w-2 h-2 rounded-full bg-primary/80"
           style={{
@@ -65,9 +105,7 @@ export function WelcomeCharacter() {
       ))}
 
       {/* Character stepping animation */}
-      <motion.div
-        className="relative"
-      >
+      <motion.div className="relative">
         {/* Ground shadow */}
         <motion.div
           initial={{ opacity: 0, scaleX: 0 }}
@@ -77,90 +115,92 @@ export function WelcomeCharacter() {
         />
 
         {/* Glow effect behind character */}
-        <div 
+        <div
           className="absolute inset-0 blur-3xl opacity-60"
           style={{
-            background: 'radial-gradient(circle, rgba(255,90,60,0.5) 0%, rgba(155,77,202,0.3) 50%, transparent 70%)',
+            background:
+              'radial-gradient(circle, rgba(255,90,60,0.5) 0%, rgba(155,77,202,0.3) 50%, transparent 70%)',
             transform: 'scale(1.4)',
           }}
         />
-        
+
         {/* Main character image with step-in animation */}
         <motion.img
           src={welcomeCharacter}
           alt="Your AI Companion"
           className="w-48 md:w-64 lg:w-80 h-auto rounded-3xl shadow-2xl relative z-10"
           style={{
-            boxShadow: '0 25px 80px -20px rgba(255, 90, 60, 0.6), 0 0 60px rgba(155, 77, 202, 0.4)',
+            boxShadow:
+              '0 25px 80px -20px rgba(255, 90, 60, 0.6), 0 0 60px rgba(155, 77, 202, 0.4)',
           }}
           initial={{ filter: 'brightness(0.5) blur(10px)' }}
           animate={{ filter: 'brightness(1) blur(0px)' }}
           transition={{ duration: 1.2, delay: 0.5 }}
           whileHover={{ scale: 1.02 }}
         />
-        
+
         {/* Floating hearts around character */}
         <motion.div
           className="absolute -top-4 -right-4 text-2xl md:text-3xl"
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
+          animate={{
             opacity: 1,
             scale: 1,
             y: [0, -10, 0],
             rotate: [0, 10, 0],
           }}
-          transition={{ 
+          transition={{
             opacity: { delay: 1.5, duration: 0.5 },
             scale: { delay: 1.5, duration: 0.5 },
-            y: { delay: 2, duration: 2, repeat: Infinity, ease: "easeInOut" },
-            rotate: { delay: 2, duration: 2, repeat: Infinity, ease: "easeInOut" },
+            y: { delay: 2, duration: 2, repeat: Infinity, ease: 'easeInOut' },
+            rotate: { delay: 2, duration: 2, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
           💕
         </motion.div>
-        
+
         <motion.div
           className="absolute top-1/4 -left-4 md:-left-6 text-xl md:text-2xl"
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
+          animate={{
             opacity: 1,
             scale: [1, 1.15, 1],
             y: [0, -8, 0],
           }}
-          transition={{ 
+          transition={{
             opacity: { delay: 1.8, duration: 0.5 },
-            scale: { delay: 2.3, duration: 2.5, repeat: Infinity, ease: "easeInOut" },
-            y: { delay: 2.3, duration: 2.5, repeat: Infinity, ease: "easeInOut" },
+            scale: { delay: 2.3, duration: 2.5, repeat: Infinity, ease: 'easeInOut' },
+            y: { delay: 2.3, duration: 2.5, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
           ✨
         </motion.div>
-        
+
         <motion.div
           className="absolute bottom-1/4 -right-4 md:-right-6 text-xl md:text-2xl"
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
+          animate={{
             opacity: 1,
             scale: [1, 1.2, 1],
             y: [0, -12, 0],
           }}
-          transition={{ 
+          transition={{
             opacity: { delay: 2, duration: 0.5 },
-            scale: { delay: 2.5, duration: 3, repeat: Infinity, ease: "easeInOut" },
-            y: { delay: 2.5, duration: 3, repeat: Infinity, ease: "easeInOut" },
+            scale: { delay: 2.5, duration: 3, repeat: Infinity, ease: 'easeInOut' },
+            y: { delay: 2.5, duration: 3, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
           💖
         </motion.div>
-        
+
         {/* Speech bubble with typing effect */}
         <motion.div
           initial={{ opacity: 0, scale: 0, x: -20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ delay: 2.5, duration: 0.5, type: "spring" }}
+          transition={{ delay: 2.5, duration: 0.5, type: 'spring' }}
           className="absolute -left-24 md:-left-36 top-6 md:top-10 z-20 bg-white/95 backdrop-blur-sm rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-xl max-w-[120px] md:max-w-[150px]"
         >
-          <motion.p 
+          <motion.p
             className="text-xs md:text-sm text-gray-700 font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
