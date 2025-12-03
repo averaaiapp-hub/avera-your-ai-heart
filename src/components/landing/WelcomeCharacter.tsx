@@ -4,10 +4,10 @@ import welcomeCharacter from '@/assets/welcome-character.png';
 export function WelcomeCharacter() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.85, y: 60 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.3, y: 100, rotateY: -30 }}
+      animate={{ opacity: 1, scale: 1, y: 0, rotateY: 0 }}
       transition={{ 
-        duration: 1.2, 
+        duration: 1.5, 
         ease: [0.25, 0.46, 0.45, 0.94],
         delay: 0.2,
       }}
@@ -93,8 +93,8 @@ export function WelcomeCharacter() {
           style={{
             boxShadow: '0 25px 80px -20px rgba(255, 90, 60, 0.6), 0 0 60px rgba(155, 77, 202, 0.4)',
           }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ filter: 'brightness(0.5) blur(10px)' }}
+          animate={{ filter: 'brightness(1) blur(0px)' }}
           transition={{ duration: 1.2, delay: 0.5 }}
           whileHover={{ scale: 1.02 }}
         />
