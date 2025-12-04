@@ -11,6 +11,9 @@ import Onboarding from "./pages/Onboarding";
 import Chat from "./pages/Chat";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import RefundCancellationPolicy from "./pages/RefundCancellationPolicy";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +31,9 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/refunds" element={<RefundCancellationPolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

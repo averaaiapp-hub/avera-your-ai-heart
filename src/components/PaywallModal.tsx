@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface PaywallModalProps {
   open: boolean;
@@ -11,6 +12,7 @@ interface PaywallModalProps {
 
 export const PaywallModal = ({ open, onOpenChange }: PaywallModalProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const plans = [
     {
@@ -108,7 +110,35 @@ export const PaywallModal = ({ open, onOpenChange }: PaywallModalProps) => {
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          Cancel anytime. Your data is always safe and private.
+          Cancel anytime. Your subscription renews automatically each period. No refunds for partially used
+          periods, except where required by law.
+        </p>
+        <p className="text-center text-xs text-muted-foreground mt-2">
+          By subscribing, you agree to our{' '}
+          <button
+            type="button"
+            className="underline hover:text-foreground"
+            onClick={() => navigate('/terms')}
+          >
+            Terms of Service
+          </button>
+          {', '}
+          <button
+            type="button"
+            className="underline hover:text-foreground"
+            onClick={() => navigate('/privacy')}
+          >
+            Privacy Policy
+          </button>
+          {' and '}
+          <button
+            type="button"
+            className="underline hover:text-foreground"
+            onClick={() => navigate('/refunds')}
+          >
+            Refund &amp; Cancellation Policy
+          </button>
+          .
         </p>
       </DialogContent>
     </Dialog>

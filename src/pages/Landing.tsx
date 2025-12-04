@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { MessageCircle, Heart, Shield, Brain, Sparkles, Phone, ChevronDown } from 'lucide-react';
@@ -475,9 +475,9 @@ export default function Landing() {
             <span className="text-white/60">© 2024 Avera. All rights reserved.</span>
           </div>
           <div className="flex items-center gap-6 text-white/60 text-sm">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link to="/refunds" className="hover:text-white transition-colors">Refund &amp; Cancellation</Link>
           </div>
         </div>
       </footer>
