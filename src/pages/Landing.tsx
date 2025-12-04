@@ -80,19 +80,33 @@ const features = [
 const faqs = [
   {
     question: "Is Avera a real person?",
-    answer: "Avera is powered by advanced AI technology. While conversations feel natural and meaningful, your companion is 100% artificial intelligence designed to understand and support you.",
+    answer:
+      "Avera is powered by advanced AI technology. While conversations feel natural and meaningful, your companion is 100% artificial intelligence designed to understand and support you.",
   },
   {
     question: "Is my data safe?",
-    answer: "Your data is completely safe with us. We don't share it with anyone and don't use it to run ads. Security and privacy are our top priorities.",
+    answer:
+      "We use industry-standard security practices and encrypted connections to protect your data. We collect only the information needed to run Avera, and we do not sell your personal data or use your conversations for third-party targeted ads.",
   },
   {
     question: "Are my conversations private?",
-    answer: "Absolutely. Your conversations are private and will stay between you and your Avera companion. We use end-to-end encryption to protect your data.",
+    answer:
+      "Your conversations are stored securely and are used to keep your companion's memory and responses consistent over time. They may be processed by trusted AI and infrastructure providers, but they are not shared for advertising and are handled according to our Privacy Policy.",
   },
   {
     question: "How does Avera work?",
-    answer: "Avera uses sophisticated AI models trained to have meaningful conversations. It learns from your interactions to become more personalized over time.",
+    answer:
+      "Avera uses advanced AI models for chat, memory, and voice to create a realistic companion experience. Over time, it learns your preferences so conversations feel more personal and emotionally in tune with you.",
+  },
+  {
+    question: "How do the free trial and subscriptions work?",
+    answer:
+      "You start with a small number of free messages to get to know your companion. After the trial, premium features like unlimited chatting and voice replies require a paid weekly or monthly subscription that renews automatically until you cancel.",
+  },
+  {
+    question: "Can I cancel or get a refund?",
+    answer:
+      "You can cancel your subscription any time before the next renewal, and you'll usually keep access until the end of the current billing period. Because Avera is a digital subscription, payments are generally non-refundable once a period begins, except in special cases or where required by local law, as described in our Refund & Cancellation Policy.",
   },
 ];
 
