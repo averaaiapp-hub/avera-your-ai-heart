@@ -61,8 +61,7 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
       .single();
 
     if (data) {
-      // DEV MODE: Always show unlimited credits
-      setFreeMessages(999999);
+      setFreeMessages(data.free_messages_remaining ?? 0);
     }
   };
 
@@ -152,12 +151,11 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
     const textToSend = messageText || input.trim();
     if (!textToSend || !conversationId || !user) return;
 
-    // DEV MODE: Skip credit checks
-    // await checkCredits();
-    // if (freeMessages <= 0) {
-    //   onCreditsExhausted();
-    //   return;
-    // }
+    // Check if user has credits remaining
+    if (freeMessages <= 0) {
+      onCreditsExhausted();
+      return;
+    }
 
     if (!messageText) setInput('');
     setLoading(true);
@@ -174,10 +172,11 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
         if (uploadError) {
           console.error('Error uploading audio:', uploadError);
         } else {
-          const { data: { publicUrl } } = supabase.storage
+          // Use signed URL for private bucket access
+          const { data: signedUrlData } = await supabase.storage
             .from('voice-messages')
-            .getPublicUrl(uploadData.path);
-          audioUrl = publicUrl;
+            .createSignedUrl(uploadData.path, 86400); // 24 hours
+          audioUrl = signedUrlData?.signedUrl || null;
         }
       }
 
@@ -250,10 +249,11 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
           .upload(aiFileName, aiAudioBlob);
 
         if (!aiUploadError && aiUploadData) {
-          const { data: { publicUrl } } = supabase.storage
+          // Use signed URL for private bucket access
+          const { data: signedUrlData } = await supabase.storage
             .from('voice-messages')
-            .getPublicUrl(aiUploadData.path);
-          aiAudioUrl = publicUrl;
+            .createSignedUrl(aiUploadData.path, 86400); // 24 hours
+          aiAudioUrl = signedUrlData?.signedUrl || null;
         }
       }
 
@@ -320,11 +320,11 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
     try {
       setLoading(true);
 
-      // DEV MODE: Skip credit checks
-      // if (freeMessages <= 0) {
-      //   onCreditsExhausted();
-      //   return;
-      // }
+      // Check if user has credits remaining
+      if (freeMessages <= 0) {
+        onCreditsExhausted();
+        return;
+      }
 
       // Get gift details
       const { data: gift } = await supabase
@@ -408,10 +408,11 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
           .upload(aiFileName, aiAudioBlob);
 
         if (!aiUploadError && aiUploadData) {
-          const { data: { publicUrl } } = supabase.storage
+          // Use signed URL for private bucket access
+          const { data: signedUrlData } = await supabase.storage
             .from('voice-messages')
-            .getPublicUrl(aiUploadData.path);
-          aiAudioUrl = publicUrl;
+            .createSignedUrl(aiUploadData.path, 86400); // 24 hours
+          aiAudioUrl = signedUrlData?.signedUrl || null;
         }
       }
 
@@ -458,7 +459,7 @@ export const ChatInterface = ({ onCreditsExhausted }: ChatInterfaceProps) => {
               <div className="min-w-0 flex-1">
                 <h2 className="text-lg sm:text-xl font-semibold truncate">Your AI Partner</h2>
                 <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                  Development Mode - Unlimited Messages
+                  {freeMessages > 0 ? `${freeMessages} messages remaining` : 'No messages remaining'}
                 </p>
               </div>
               <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">

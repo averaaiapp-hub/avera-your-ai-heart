@@ -6,6 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Maximum audio file size (10MB in base64 is roughly 13.3MB string)
+const MAX_AUDIO_SIZE = 13_500_000;
+
 function processBase64Chunks(base64String: string, chunkSize = 32768) {
   const chunks: Uint8Array[] = [];
   let position = 0;
@@ -37,17 +40,38 @@ function processBase64Chunks(base64String: string, chunkSize = 32768) {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { audio } = await req.json();
     
     if (!audio) {
-      throw new Error('No audio data provided');
+      console.error('No audio data provided');
+      return new Response(
+        JSON.stringify({ error: 'No audio data provided' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    console.log('Processing audio transcription...');
+    // Validate audio type and size to prevent resource abuse
+    if (typeof audio !== 'string') {
+      console.error('Invalid audio format - expected base64 string');
+      return new Response(
+        JSON.stringify({ error: 'Invalid audio format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (audio.length > MAX_AUDIO_SIZE) {
+      console.error(`Audio file too large: ${audio.length} bytes (max: ${MAX_AUDIO_SIZE})`);
+      return new Response(
+        JSON.stringify({ error: 'Audio file too large. Maximum size is 10MB.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Processing audio transcription, size: ${audio.length} characters`);
     
     const binaryAudio = processBase64Chunks(audio);
     
@@ -58,7 +82,11 @@ serve(async (req) => {
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY not configured');
+      console.error('OPENAI_API_KEY not configured');
+      return new Response(
+        JSON.stringify({ error: 'Voice service not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
@@ -71,14 +99,15 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      // Log detailed error server-side only
       console.error('OpenAI API error:', response.status, errorText);
-      // Return generic message to client
-      throw new Error('Voice transcription failed. Please try again.');
+      return new Response(
+        JSON.stringify({ error: 'Voice transcription failed. Please try again.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const result = await response.json();
-    console.log('Transcription successful:', result.text);
+    console.log('Transcription successful');
 
     return new Response(
       JSON.stringify({ text: result.text }),
@@ -89,10 +118,7 @@ serve(async (req) => {
     console.error('Error in voice-to-text:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
