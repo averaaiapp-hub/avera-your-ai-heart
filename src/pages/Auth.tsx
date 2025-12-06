@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
+import averaLogo from '@/assets/avera-logo.png';
 
 const loginSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address'),
@@ -119,7 +120,7 @@ export default function Auth() {
       >
         <div className="text-center space-y-4">
           <img 
-            src="/src/assets/avera-logo.png" 
+            src={averaLogo} 
             alt="Avera" 
             className="h-16 mx-auto"
           />
