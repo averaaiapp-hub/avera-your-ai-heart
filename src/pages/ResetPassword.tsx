@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Lock } from 'lucide-react';
 import { z } from 'zod';
+import averaLogo from '@/assets/avera-logo.png';
 
 const resetPasswordSchema = z.object({
   password: z.string()
@@ -100,7 +101,7 @@ export default function ResetPassword() {
       >
         <div className="text-center space-y-4">
           <img 
-            src="/src/assets/avera-logo.png" 
+            src={averaLogo} 
             alt="Avera" 
             className="h-16 mx-auto"
           />
